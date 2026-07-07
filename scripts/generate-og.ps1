@@ -12,7 +12,7 @@ $publicDir = Join-Path $root 'public'
 
 $bgColor = [System.Drawing.ColorTranslator]::FromHtml('#FAFAF8')
 $inkColor = [System.Drawing.ColorTranslator]::FromHtml('#141412')
-$accentColor = [System.Drawing.ColorTranslator]::FromHtml('#2563EB')
+$accentColor = [System.Drawing.ColorTranslator]::FromHtml('#1D4ED8')
 $muteColor = [System.Drawing.ColorTranslator]::FromHtml('#73736C')
 $lineColor = [System.Drawing.ColorTranslator]::FromHtml('#E3E3DB')
 
