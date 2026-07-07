@@ -3,12 +3,12 @@
 > Sito personale di **Matteo Carola** — Software Engineer | Cloud & AI Engineering | AWS.
 > One-page statica, veloce e accessibile. Il repository è esso stesso parte del portfolio.
 
-[![CI](https://github.com/TODO-username/matteocarola-dev/actions/workflows/ci.yml/badge.svg)](https://github.com/TODO-username/matteocarola-dev/actions/workflows/ci.yml)
+[![CI](https://github.com/Matteo0421/matteocarola-dev/actions/workflows/ci.yml/badge.svg)](https://github.com/Matteo0421/matteocarola-dev/actions/workflows/ci.yml)
 [![Astro](https://img.shields.io/badge/Astro-5-blueviolet)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
-**Live:** [matteocarola.dev](https://matteocarola.dev)
+**Live:** [matteocarola-dev.vercel.app](https://matteocarola-dev.vercel.app) — dominio `matteocarola.dev` in arrivo
 
 ---
 
@@ -46,7 +46,7 @@ Perché non Next.js? Per una one-page statica non servono SSR, server actions o 
 Requisiti: **Node.js ≥ 20** (consigliata la 22 LTS) e npm.
 
 ```bash
-git clone https://github.com/TODO-username/matteocarola-dev.git
+git clone https://github.com/Matteo0421/matteocarola-dev.git
 cd matteocarola-dev
 npm install
 npm run dev        # → http://localhost:4321
@@ -70,8 +70,7 @@ npm run dev        # → http://localhost:4321
 ├── .github/workflows/ci.yml    # CI: typecheck, lint, format, build
 ├── public/                     # asset statici serviti as-is
 │   ├── favicon.svg             # monogramma, si adatta a light/dark
-│   ├── og.png                  # immagine Open Graph 1200×630
-│   └── robots.txt
+│   └── og.png                  # immagine Open Graph 1200×630
 ├── scripts/
 │   └── generate-og.ps1         # rigenera og.png e apple-touch-icon.png
 └── src/
@@ -85,7 +84,9 @@ npm run dev        # → http://localhost:4321
     │   └── experience.ts       #   esperienza e formazione
     ├── i18n/ui.ts              # ★ stringhe UI (predisposto per l'inglese)
     ├── layouts/Base.astro      # <html>, tema no-flash, SEO
-    ├── pages/index.astro       # composizione della one-page
+    ├── pages/
+    │   ├── index.astro         # composizione della one-page
+    │   └── robots.txt.ts       # robots.txt generato dalla config `site`
     ├── styles/global.css       # design token + Tailwind
     └── types.ts                # tipi condivisi dei contenuti
 ```
@@ -125,7 +126,7 @@ La collection `blog` è già definita in `src/content.config.ts` (loader `glob`,
 
 - Meta `title`/`description`, canonical, Open Graph e Twitter card in [`Seo.astro`](src/components/Seo.astro)
 - JSON-LD `Person` (schema.org)
-- Sitemap generata da `@astrojs/sitemap` (`sitemap-index.xml`) e referenziata da `robots.txt`
+- Sitemap generata da `@astrojs/sitemap` (`sitemap-index.xml`) e referenziata da un `robots.txt` costruito alla build sulla config `site` ([endpoint](src/pages/robots.txt.ts))
 - `og.png` 1200×630 per le anteprime social
 
 ## Accessibilità e performance
@@ -150,11 +151,19 @@ Ogni push/PR su `main` esegue: `astro check` → `eslint` → `prettier --check`
 
 ## Deploy
 
-Il sito è pensato per **Vercel** (gratuito per progetti personali):
+Deploy su **Vercel** (piano hobby, gratuito), in due fasi.
+
+**Fase 1 — online senza dominio (attuale)**
 
 1. push del repo su GitHub;
-2. su [vercel.com](https://vercel.com) → _Add New Project_ → importare il repo: Astro viene riconosciuto da solo (build `astro build`, output `dist/`);
-3. dominio custom: _Settings → Domains_ → aggiungere `matteocarola.dev` e seguire le istruzioni DNS del registrar.
+2. su [vercel.com](https://vercel.com) → _Add New… → Project_ → importare `matteocarola-dev`: Astro viene riconosciuto da solo (build `astro build`, output `dist/`);
+3. il sito è servito su `https://matteocarola-dev.vercel.app`.
+
+**Fase 2 — dominio custom (quando si vuole)**
+
+1. acquistare `matteocarola.dev` (registrar consigliati: Cloudflare Registrar o Porkbun, ~10–13 €/anno a listino);
+2. Vercel → _Settings → Domains_ → aggiungere il dominio e seguire le istruzioni DNS;
+3. aggiornare `site` in [`astro.config.ts`](astro.config.ts): è **l'unico punto da toccare** — canonical, Open Graph, sitemap e robots.txt derivano tutti da lì.
 
 Nota sul TLD `.dev`: è in HSTS preload, funziona **solo in HTTPS** — su Vercel il certificato è automatico.
 

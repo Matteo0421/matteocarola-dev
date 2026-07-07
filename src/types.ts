@@ -5,7 +5,6 @@ export interface Profile {
   email: string;
   linkedin: string;
   github: string;
-  siteUrl: string;
   repoUrl: string;
   about: string[];
   facts: Fact[];

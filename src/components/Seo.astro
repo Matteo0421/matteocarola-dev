@@ -17,7 +17,7 @@ const jsonLd = {
   '@type': 'Person',
   name: profile.name,
   jobTitle: 'Software Engineer',
-  url: profile.siteUrl,
+  url: new URL('/', Astro.site).href,
   email: `mailto:${profile.email}`,
   sameAs: [profile.linkedin, profile.github],
   knowsAbout: ['AWS', 'Cloud Engineering', 'Generative AI', 'Infrastructure as Code', 'RAG'],
