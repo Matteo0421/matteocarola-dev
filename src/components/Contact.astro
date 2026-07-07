@@ -1,0 +1,27 @@
+---
+import { profile } from '../data/profile';
+import { ui } from '../i18n/ui';
+import Section from './Section.astro';
+---
+
+<Section id="contatti" number="05" title={ui.sections.contact}>
+  <div class="max-w-2xl">
+    <p class="text-ink-soft text-[15px] leading-relaxed md:text-base">{ui.contact.invite}</p>
+    <a
+      href={`mailto:${profile.email}`}
+      class="font-display text-ink decoration-accent hover:text-accent mt-6 inline-block text-2xl font-bold break-all underline decoration-[3px] underline-offset-8 transition-colors md:text-4xl"
+    >
+      {profile.email}
+    </a>
+    <div class="mt-10 flex flex-wrap gap-3">
+      <a href={profile.github} target="_blank" rel="noopener noreferrer" class="btn-ghost">
+        GitHub
+        <span aria-hidden="true">↗</span>
+      </a>
+      <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" class="btn-ghost">
+        LinkedIn
+        <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </div>
+</Section>

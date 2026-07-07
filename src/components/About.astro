@@ -1,0 +1,27 @@
+---
+import { profile } from '../data/profile';
+import { ui } from '../i18n/ui';
+import Section from './Section.astro';
+---
+
+<Section id="chi-sono" number="01" title={ui.sections.about}>
+  <div class="grid gap-10 md:grid-cols-[1fr_300px] md:gap-14">
+    <div class="text-ink-soft space-y-5 text-[15px] leading-relaxed md:text-base">
+      {profile.about.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+    <aside aria-label="In breve">
+      <dl class="border-line bg-bg-alt rounded-xl border p-6">
+        {
+          profile.facts.map((fact, i) => (
+            <div class:list={['py-3', i > 0 && 'border-line border-t']}>
+              <dt class="text-ink-mute text-[11px] font-semibold tracking-[0.12em] uppercase">
+                {fact.label}
+              </dt>
+              <dd class="text-ink mt-1 text-sm font-medium">{fact.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </aside>
+  </div>
+</Section>

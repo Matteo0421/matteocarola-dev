@@ -1,0 +1,90 @@
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/space-grotesk';
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/*
+ * Design tokens — direzione "Editoriale".
+ * Il tema è guidato da `data-theme` su <html>; le utility Tailwind
+ * (bg-bg, text-ink, ...) leggono queste variabili via @theme inline.
+ */
+:root {
+  --bg: #fafaf8;
+  --bg-alt: #f1f1eb;
+  --ink: #141412;
+  --ink-soft: #50504a;
+  --ink-mute: #73736c;
+  --line: #e3e3db;
+  --accent: #2563eb;
+  --on-accent: #ffffff;
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --bg: #121211;
+  --bg-alt: #1b1b19;
+  --ink: #f1f1ec;
+  --ink-soft: #b3b3aa;
+  --ink-mute: #8b8b83;
+  --line: #2b2b27;
+  --accent: #60a5fa;
+  --on-accent: #0b0b0a;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Space Grotesk Variable', 'Inter Variable', ui-sans-serif, sans-serif;
+  --color-bg: var(--bg);
+  --color-bg-alt: var(--bg-alt);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-mute: var(--ink-mute);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-bg text-ink font-sans antialiased;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  body {
+    transition: none;
+  }
+}
+
+::selection {
+  background-color: var(--accent);
+  color: var(--on-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-ink text-bg inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-sm font-medium transition-opacity hover:opacity-85;
+  }
+  .btn-ghost {
+    @apply border-line text-ink hover:border-ink-mute hover:bg-bg-alt inline-flex items-center gap-2 rounded-md border px-4 py-2.5 text-sm font-medium transition-colors;
+  }
+  .chip {
+    @apply border-line bg-bg-alt text-ink-soft inline-flex rounded-md border px-2.5 py-1 text-[13px] leading-5;
+  }
+}

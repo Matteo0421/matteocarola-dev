@@ -1,0 +1,63 @@
+---
+import { profile } from '../data/profile';
+import { ui } from '../i18n/ui';
+---
+
+<section id="top" class="mx-auto max-w-5xl px-5 pt-16 pb-16 md:px-8 md:pt-28 md:pb-24">
+  <p class="text-accent text-xs font-semibold tracking-[0.18em] uppercase md:text-sm">
+    {ui.hero.kicker}
+  </p>
+  <h1
+    class="font-display text-ink mt-4 text-5xl leading-[1.02] font-bold tracking-tight md:text-7xl"
+  >
+    {profile.name}
+  </h1>
+  <div class="bg-accent mt-6 h-[3px] w-14" aria-hidden="true"></div>
+  <p class="text-ink-soft mt-6 max-w-2xl text-base leading-relaxed md:text-lg">
+    {ui.hero.lede}
+  </p>
+  <p class="text-ink-mute mt-4 flex items-center gap-1.5 text-sm">
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+      <circle cx="12" cy="10" r="3"></circle>
+    </svg>
+    {profile.location}
+  </p>
+  <div class="mt-9 flex flex-wrap items-center gap-3">
+    <a href={`mailto:${profile.email}`} class="btn-primary">
+      {ui.hero.ctaEmail}
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+        <path d="m2 7 10 6 10-6"></path>
+      </svg>
+    </a>
+    <a href={profile.github} target="_blank" rel="noopener noreferrer" class="btn-ghost">
+      GitHub
+      <span aria-hidden="true">↗</span>
+    </a>
+    <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" class="btn-ghost">
+      LinkedIn
+      <span aria-hidden="true">↗</span>
+    </a>
+  </div>
+</section>

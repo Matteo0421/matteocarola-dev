@@ -1,0 +1,45 @@
+---
+import { projects } from '../data/projects';
+import { ui } from '../i18n/ui';
+import Section from './Section.astro';
+---
+
+<Section id="progetti" number="03" title={ui.sections.projects}>
+  <div class="divide-line divide-y">
+    {
+      projects.map((project) => (
+        <article class="grid gap-3 py-8 first:pt-0 last:pb-0 md:grid-cols-[1fr_auto] md:gap-x-10">
+          <div>
+            <h3 class="font-display text-ink text-xl font-bold md:text-2xl">{project.title}</h3>
+            <p class="text-ink-mute mt-1 text-sm">{project.client}</p>
+            <p class="text-ink-soft mt-4 max-w-3xl text-[15px] leading-relaxed">
+              {project.description}
+            </p>
+            <ul class="mt-5 flex flex-wrap gap-2" role="list">
+              {project.tags.map((tag) => (
+                <li class="chip">{tag}</li>
+              ))}
+            </ul>
+            {project.link && (
+              <a
+                href={project.link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-accent mt-5 inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
+              >
+                {project.link.label}
+                <span aria-hidden="true">↗</span>
+              </a>
+            )}
+          </div>
+          <p
+            class="font-display text-ink-mute row-start-1 text-sm font-bold md:text-right"
+            aria-label={`Anno: ${project.year}`}
+          >
+            {project.year}
+          </p>
+        </article>
+      ))
+    }
+  </div>
+</Section>

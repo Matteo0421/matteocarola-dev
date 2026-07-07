@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://matteocarola.dev/sitemap-index.xml
