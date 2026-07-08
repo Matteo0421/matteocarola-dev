@@ -11,7 +11,7 @@ import { profile } from './profile';
 export const projects: Project[] = [
   {
     title: 'DELFI — Piattaforma GenAI di analisi documentale giudiziaria',
-    client: 'ANBSC — Agenzia Nazionale per i Beni Sequestrati e Confiscati',
+    client: 'Agenzia della Pubblica Amministrazione · settore giustizia',
     year: '2026',
     description:
       'Piattaforma di Generative AI su AWS per l’analisi automatica di grandi volumi di documenti giudiziari: estrazione e classificazione delle informazioni con modelli LLM e ricerca semantica (RAG). Braccio operativo del Cloud Lead per l’implementazione tecnica: infrastruttura interamente in Infrastructure as Code con CI/CD e deploy automatizzato end-to-end, servizi di elaborazione documentale (OCR e modelli linguistici su istanze GPU), monitoraggio e troubleshooting in esercizio, dashboard React per la consultazione dei risultati.',
