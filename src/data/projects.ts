@@ -18,8 +18,8 @@ export const projects: Project[] = [
     tags: ['Generative AI', 'RAG', 'AWS', 'IaC', 'CI/CD'],
   },
   {
-    title: 'Lab AI & Digital Twin — Fondazione ITS',
-    client: 'Fondazione ITS NewTechSI · finanziato dal PNRR',
+    title: 'Lab AI & Digital Twin',
+    client: 'Ente di alta formazione tecnica (ITS) · fondi PNRR',
     year: '2026',
     description:
       'Laboratorio didattico di Intelligenza Artificiale e Digital Twin per la formazione degli studenti: prototipo su AWS, poi infrastruttura fisica dedicata con nodi GPU. Referente operativo della delivery, condotta in ampia autonomia: messa in opera dei sistemi, esercizio del cluster Kubernetes con stack MLOps (JupyterHub, MLflow), demo AI di ottimizzazione supply chain e anomaly detection, backup automatico con prova di ripristino reale, documentazione di conformità DNSH e collaudo.',
