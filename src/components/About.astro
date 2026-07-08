@@ -9,7 +9,16 @@ import Section from './Section.astro';
     <div class="text-ink-soft space-y-5 text-[15px] leading-relaxed md:text-base">
       {profile.about.map((paragraph) => <p>{paragraph}</p>)}
     </div>
-    <aside aria-label="In breve">
+    <aside aria-label="In breve" class="space-y-6">
+      <img
+        src={profile.photo}
+        alt={profile.photoAlt}
+        width="800"
+        height="800"
+        loading="lazy"
+        decoding="async"
+        class="border-line mx-auto aspect-square w-48 rounded-xl border object-cover sm:w-56 md:w-full"
+      />
       <dl class="border-line bg-bg-alt rounded-xl border p-6">
         {
           profile.facts.map((fact, i) => (

@@ -6,6 +6,8 @@ export interface Profile {
   linkedin: string;
   github: string;
   repoUrl: string;
+  photo: string;
+  photoAlt: string;
   about: string[];
   facts: Fact[];
 }

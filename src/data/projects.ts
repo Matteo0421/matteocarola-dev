@@ -26,6 +26,14 @@ export const projects: Project[] = [
     tags: ['Kubernetes', 'MLOps', 'Digital Twin', 'PNRR'],
   },
   {
+    title: 'Piattaforma di cyber security & risk management',
+    client: 'Azienda del settore difesa',
+    year: '2025',
+    description:
+      'Front-end di una piattaforma enterprise per l’analisi e la gestione del rischio di cyber security. Ho sviluppato interfacce a procedura guidata (wizard multi-step) con logica condizionale tra i passaggi, tabelle dati complesse e autenticazione con controllo degli accessi basato su ruoli, in team e su uno stack React strutturato secondo il pattern Atomic Design. Ho inoltre contribuito a una base di codice front-end standardizzata e riutilizzabile per i progetti successivi.',
+    tags: ['React', 'TypeScript', 'Redux Toolkit', 'AG Grid', 'Keycloak'],
+  },
+  {
     title: 'matteocarola.dev — questo sito',
     client: 'Progetto personale · open source',
     year: '2026',
