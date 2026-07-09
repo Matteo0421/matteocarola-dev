@@ -6,8 +6,7 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   // Unico punto in cui vive l'URL pubblico: canonical, Open Graph, sitemap
   // e robots.txt derivano tutti da qui.
-  // TODO(dominio): sostituire con 'https://matteocarola.dev' dopo l'acquisto.
-  site: 'https://matteocarola-dev.vercel.app',
+  site: 'https://matteocarola.com',
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],

@@ -8,7 +8,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
-**Live:** [matteocarola-dev.vercel.app](https://matteocarola-dev.vercel.app) — dominio `matteocarola.dev` in arrivo
+**Live:** [matteocarola.com](https://matteocarola.com)
 
 ---
 
@@ -130,7 +130,7 @@ La collection `blog` è già definita in `src/content.config.ts` (loader `glob`,
 
 ## Tech Radar (pipeline semi-automatica)
 
-La pagina [/radar](https://matteocarola-dev.vercel.app/radar) pubblica card brevi su novità cloud/AWS/AI. Le card non le scrivo da zero: le **propone una pipeline**, io le approvo. È un piccolo progetto Cloud & AI end-to-end, tutto in questo repo e tutto a costo zero.
+La pagina [/radar](https://matteocarola.com/radar) pubblica card brevi su novità cloud/AWS/AI. Le card non le scrivo da zero: le **propone una pipeline**, io le approvo. È un piccolo progetto Cloud & AI end-to-end, tutto in questo repo e tutto a costo zero.
 
 ```
 GitHub Actions (cron, 2×/settimana)
