@@ -6,3 +6,5 @@ sourceName: "AWS What’s New"
 sourceUrl: "https://aws.amazon.com/about-aws/whats-new/2026/07/amazon-rds-oracle-database-26ai/"
 pubDate: 2026-07-09
 ---
+
+Interessante il pattern più che l'annuncio: l'integrazione con l'LLM si sposta dentro il database gestito invece di stare nel codice applicativo. Per chi come me costruisce piattaforme GenAI su AWS, vuol dire un pezzo di RAG/text-to-SQL in meno da mantenere a mano.

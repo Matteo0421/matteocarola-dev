@@ -6,3 +6,5 @@ sourceName: "AWS What’s New"
 sourceUrl: "https://aws.amazon.com/about-aws/whats-new/2026/07/s3-vectors-available-aws-govcloud-regions/"
 pubDate: 2026-07-09
 ---
+
+Lo storage vettoriale direttamente su S3 mi incuriosisce soprattutto per i costi: per tanti casi d'uso RAG un vector DB dedicato è sovradimensionato. E l'arrivo in GovCloud è il segnale che AWS lo considera pronto anche per ambienti regolamentati.
