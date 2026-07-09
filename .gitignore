@@ -16,3 +16,6 @@ pnpm-debug.log*
 # sistema
 .DS_Store
 Thumbs.db
+
+# tooling locale
+.claude/

@@ -22,6 +22,7 @@
 - [Tema chiaro/scuro](#tema-chiaroscuro)
 - [Internazionalizzazione (i18n)](#internazionalizzazione-i18n)
 - [Blog (predisposto)](#blog-predisposto)
+- [Tech Radar (pipeline semi-automatica)](#tech-radar-pipeline-semi-automatica)
 - [SEO](#seo)
 - [Accessibilità e performance](#accessibilità-e-performance)
 - [Asset generati](#asset-generati)
@@ -67,16 +68,20 @@ npm run dev        # → http://localhost:4321
 ## Struttura del progetto
 
 ```
-├── .github/workflows/ci.yml    # CI: typecheck, lint, format, build
+├── .github/workflows/
+│   ├── ci.yml                  # CI: typecheck, lint, format, build
+│   └── radar.yml               # Tech Radar: cron → card proposte → PR
 ├── public/                     # asset statici serviti as-is
 │   ├── favicon.svg             # monogramma, si adatta a light/dark
 │   └── og.png                  # immagine Open Graph 1200×630
 ├── scripts/
-│   └── generate-og.ps1         # rigenera og.png e apple-touch-icon.png
+│   ├── generate-og.ps1         # rigenera og.png e apple-touch-icon.png
+│   └── radar/generate.mjs      # generatore delle card del Tech Radar
 └── src/
     ├── components/             # una sezione = un componente .astro
-    ├── content.config.ts       # collection del blog (vuota, predisposta)
+    ├── content.config.ts       # collection: blog (predisposta) + radar
     ├── content/blog/           # futuri post in Markdown
+    ├── content/radar/          # card del Tech Radar (pubblicate via PR)
     ├── data/                   # ★ contenuti tipizzati (unica fonte)
     │   ├── profile.ts          #   anagrafica pubblica, about, contatti
     │   ├── skills.ts           #   competenze raggruppate
@@ -86,6 +91,7 @@ npm run dev        # → http://localhost:4321
     ├── layouts/Base.astro      # <html>, tema no-flash, SEO
     ├── pages/
     │   ├── index.astro         # composizione della one-page
+    │   ├── radar.astro         # pagina /radar (Tech Radar)
     │   └── robots.txt.ts       # robots.txt generato dalla config `site`
     ├── styles/global.css       # design token + Tailwind
     └── types.ts                # tipi condivisi dei contenuti
@@ -121,6 +127,33 @@ La collection `blog` è già definita in `src/content.config.ts` (loader `glob`,
 1. creare un post: `src/content/blog/primo-post.md` con il frontmatter dello schema;
 2. creare `src/pages/blog/index.astro` (elenco) e `src/pages/blog/[id].astro` (dettaglio) usando `getCollection('blog')`;
 3. la sitemap si aggiorna da sola alla build.
+
+## Tech Radar (pipeline semi-automatica)
+
+La pagina [/radar](https://matteocarola-dev.vercel.app/radar) pubblica card brevi su novità cloud/AWS/AI. Le card non le scrivo da zero: le **propone una pipeline**, io le approvo. È un piccolo progetto Cloud & AI end-to-end, tutto in questo repo e tutto a costo zero.
+
+```
+GitHub Actions (cron, 2×/settimana)
+  └─ scripts/radar/generate.mjs   (Node 22, zero dipendenze npm)
+       ├─ 1. fetch delle fonti     AWS What's New (RSS) · Hacker News (API Algolia)
+       │                           · GitHub Search (repo nuovi in crescita)
+       ├─ 2. dedup per URL         contro le card già in src/content/radar/
+       ├─ 3. Gemini (free tier)    sceglie ≤3 novità e scrive titolo, sintesi
+       │                           e tag in italiano (output JSON con schema)
+       └─ 4. card in Markdown  →   Pull Request  →  review umana  →  merge
+                                                                      └─ Vercel pubblica
+```
+
+Scelte deliberate:
+
+- **Umano nel loop**: la pipeline apre una PR, non pubblica mai da sola. In review posso modificare la sintesi, aggiungere una nota personale (il body del file `.md`) o scartare la card.
+- **Zero dipendenze**: lo script usa solo la `fetch` nativa di Node — niente supply chain da mantenere per un cron.
+- **Anti-allucinazione**: il modello sceglie da una lista numerata e scrive solo a partire da titolo+contesto forniti; URL e fonte restano quelli originali, mai generati.
+- **Costo zero**: GitHub Actions (repo pubblico), API gratuite, Gemini free tier (volume: pochi item a settimana).
+
+Per eseguirlo in locale: `node scripts/radar/generate.mjs --dry-run` (nessuna API key richiesta, stampa i candidati). Il run completo richiede `GEMINI_API_KEY`; in CI la legge dai [secrets del repo](.github/workflows/radar.yml).
+
+Limite noto (accettato per semplicità): la dedup guarda solo le card pubblicate su `main`, quindi una card scartata chiudendo la PR può essere riproposta finché la notizia resta nelle fonti.
 
 ## SEO
 

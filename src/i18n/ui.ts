@@ -20,6 +20,16 @@ export interface Dictionary {
     contact: string;
   };
   contact: { invite: string };
+  radar: {
+    title: string;
+    metaTitle: string;
+    metaDescription: string;
+    intro: string;
+    howItWorks: string;
+    empty: string;
+    noteLabel: string;
+    sourceLabel: string;
+  };
   a11y: {
     skipToContent: string;
     toggleTheme: string;
@@ -36,12 +46,14 @@ export const it: Dictionary = {
     description:
       'Software Engineer a Napoli. Infrastrutture cloud e piattaforme di Generative AI su AWS: IaC, serverless, CI/CD, RAG. Progetti, competenze e contatti.',
   },
+  // Href assoluti (/#...): la nav funziona anche dalle pagine interne come /radar.
   nav: [
-    { href: '#chi-sono', label: 'Chi sono' },
-    { href: '#competenze', label: 'Competenze' },
-    { href: '#progetti', label: 'Progetti' },
-    { href: '#esperienza', label: 'Esperienza' },
-    { href: '#contatti', label: 'Contatti' },
+    { href: '/#chi-sono', label: 'Chi sono' },
+    { href: '/#competenze', label: 'Competenze' },
+    { href: '/#progetti', label: 'Progetti' },
+    { href: '/#esperienza', label: 'Esperienza' },
+    { href: '/#contatti', label: 'Contatti' },
+    { href: '/radar', label: 'Radar' },
   ],
   hero: {
     kicker: 'Software Engineer — Cloud & AI Engineering · AWS',
@@ -58,6 +70,19 @@ export const it: Dictionary = {
   },
   contact: {
     invite: 'Il modo più rapido per raggiungermi è una mail. Rispondo anche su LinkedIn.',
+  },
+  radar: {
+    title: 'Tech Radar',
+    metaTitle: 'Tech Radar — Matteo Carola',
+    metaDescription:
+      'Segnalazioni brevi su cloud, AWS e AI: selezionate da una pipeline open source (GitHub Actions + LLM) e approvate una a una.',
+    intro:
+      'Novità su cloud, AWS e AI che ritengo valga la pena conoscere: poche card, brevi, sempre con il link alla fonte.',
+    howItWorks:
+      'Come funziona: una pipeline open source (GitHub Actions + Gemini) pesca le novità dalle fonti, le sintetizza e apre una Pull Request; io approvo, scarto o aggiungo una nota. Niente si pubblica da solo.',
+    empty: 'Le prime segnalazioni sono in arrivo: il radar è appena stato acceso.',
+    noteLabel: 'La mia nota',
+    sourceLabel: 'Fonte',
   },
   a11y: {
     skipToContent: 'Salta al contenuto',

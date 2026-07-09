@@ -17,4 +17,22 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { blog };
+/**
+ * Tech Radar: card brevi su novità cloud/AI, generate dalla pipeline
+ * semi-automatica (scripts/radar/generate.mjs + .github/workflows/radar.yml)
+ * e pubblicate solo dopo l'approvazione della Pull Request.
+ * Il body del file è la nota personale (opzionale) aggiunta a mano in fase di review.
+ */
+const radar = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/radar' }),
+  schema: z.object({
+    title: z.string(),
+    summary: z.string(),
+    tags: z.array(z.string()).min(1).max(5),
+    sourceName: z.string(),
+    sourceUrl: z.string().url(),
+    pubDate: z.coerce.date(),
+  }),
+});
+
+export const collections = { blog, radar };

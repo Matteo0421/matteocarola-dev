@@ -1,0 +1,54 @@
+# Tech Radar — pipeline semi-automatica.
+# Pesca le novità dalle fonti, le sintetizza con Gemini e APRE UNA PULL REQUEST:
+# la pubblicazione avviene solo al merge (umano nel loop, mai in automatico).
+#
+# Prerequisiti (Settings del repo):
+# - Secrets → Actions → GEMINI_API_KEY
+# - Actions → General → "Allow GitHub Actions to create and approve pull requests"
+name: Tech Radar
+
+on:
+  schedule:
+    # Lunedì e giovedì alle 06:00 UTC (~2 volte a settimana).
+    - cron: '0 6 * * 1,4'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: tech-radar
+  cancel-in-progress: false
+
+jobs:
+  propose-cards:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Zero dipendenze npm: niente install, parte subito.
+      - name: Genera le card proposte
+        run: node scripts/radar/generate.mjs
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_BODY_PATH: ${{ runner.temp }}/radar-pr-body.md
+
+      # Se lo script non ha scritto card (nulla di nuovo), non crea nessuna PR.
+      - name: Apri la Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          add-paths: src/content/radar/*.md
+          branch: radar/proposte
+          delete-branch: true
+          commit-message: 'radar: nuove card proposte dalla pipeline'
+          title: '📡 Tech Radar — nuove card da approvare'
+          body-path: ${{ runner.temp }}/radar-pr-body.md
+          labels: tech-radar
