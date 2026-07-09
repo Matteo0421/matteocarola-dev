@@ -31,6 +31,8 @@ const MAX_CARDS = 3;
 const CONTENT_DIR = path.join(process.cwd(), 'src', 'content', 'radar');
 const GEMINI_MODEL = process.env.GEMINI_MODEL ?? 'gemini-2.5-flash';
 const FETCH_TIMEOUT_MS = 20_000;
+// La generazione può richiedere ben più di una fetch normale: timeout dedicato.
+const GEMINI_TIMEOUT_MS = 120_000;
 
 /* ------------------------------------------------------------------ utils */
 
@@ -38,10 +40,10 @@ function log(message) {
   console.log(`[radar] ${message}`);
 }
 
-async function fetchWithTimeout(url, options = {}) {
+async function fetchWithTimeout(url, options = {}, timeoutMs = FETCH_TIMEOUT_MS) {
   const response = await fetch(url, {
     ...options,
-    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    signal: AbortSignal.timeout(timeoutMs),
   });
   if (!response.ok) {
     throw new Error(`HTTP ${response.status} da ${new URL(url).hostname}`);
@@ -229,6 +231,9 @@ async function pickCardsWithGemini(candidates) {
     contents: [{ parts: [{ text: prompt }] }],
     generationConfig: {
       temperature: 0.4,
+      // Niente "thinking": risposta più rapida (il run in Actions andava in
+      // timeout) e meno quota free tier consumata. Per questo task non serve.
+      thinkingConfig: { thinkingBudget: 0 },
       responseMimeType: 'application/json',
       responseSchema: {
         type: 'ARRAY',
@@ -250,11 +255,15 @@ async function pickCardsWithGemini(candidates) {
   let lastError;
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      const response = await fetchWithTimeout(endpoint, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
-        body: JSON.stringify(body),
-      });
+      const response = await fetchWithTimeout(
+        endpoint,
+        {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
+          body: JSON.stringify(body),
+        },
+        GEMINI_TIMEOUT_MS,
+      );
       const data = await response.json();
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
       if (!text) throw new Error('Risposta di Gemini senza testo.');
@@ -262,7 +271,8 @@ async function pickCardsWithGemini(candidates) {
     } catch (error) {
       lastError = error;
       log(`Tentativo Gemini ${attempt}/3 fallito: ${error.message}`);
-      if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, attempt * 5000));
+      // Backoff generoso: i 503 del free tier rientrano in decine di secondi.
+      if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, attempt * 15_000));
     }
   }
   throw lastError;
