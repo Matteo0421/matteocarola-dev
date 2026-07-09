@@ -1,4 +1,4 @@
-# matteocarola.dev
+# matteocarola.com
 
 > Sito personale di **Matteo Carola** — Software Engineer | Cloud & AI Engineering | AWS.
 > One-page statica, veloce e accessibile. Il repository è esso stesso parte del portfolio.

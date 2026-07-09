@@ -34,7 +34,7 @@ export const projects: Project[] = [
     tags: ['React', 'TypeScript', 'Redux Toolkit', 'AG Grid', 'Keycloak'],
   },
   {
-    title: 'matteocarola.dev — questo sito',
+    title: 'matteocarola.com — questo sito',
     client: 'Progetto personale · open source',
     year: '2026',
     description:

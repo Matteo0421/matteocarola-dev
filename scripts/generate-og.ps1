@@ -38,7 +38,7 @@ $siteFont = New-Object System.Drawing.Font('Segoe UI', 22, [System.Drawing.FontS
 
 $g.DrawString('SOFTWARE ENGINEER - CLOUD & AI ENGINEERING - AWS', $kickerFont, $accentBrush, 74, 190)
 $g.DrawString('Matteo Carola', $nameFont, $inkBrush, 64, 250)
-$g.DrawString('matteocarola.dev', $siteFont, $muteBrush, 76, 520)
+$g.DrawString('matteocarola.com', $siteFont, $muteBrush, 76, 520)
 
 $bmp.Save((Join-Path $publicDir 'og.png'), [System.Drawing.Imaging.ImageFormat]::Png)
 $g.Dispose(); $bmp.Dispose()
