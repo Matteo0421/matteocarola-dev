@@ -23,6 +23,7 @@
 - [Internazionalizzazione (i18n)](#internazionalizzazione-i18n)
 - [Blog (predisposto)](#blog-predisposto)
 - [Tech Radar (pipeline semi-automatica)](#tech-radar-pipeline-semi-automatica)
+- [Chatbot RAG «Chiedi a Matteo»](#chatbot-rag-chiedi-a-matteo)
 - [SEO](#seo)
 - [Accessibilità e performance](#accessibilità-e-performance)
 - [Asset generati](#asset-generati)
@@ -33,12 +34,12 @@
 
 ## Stack e scelte tecniche
 
-| Tecnologia                                     | Perché                                                                                                                                                                                      |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Astro 5](https://astro.build)                 | Sito statico che spedisce **zero JavaScript di default**: l'unico JS in pagina è il toggle del tema (~1 KB inline). Content collections native per il futuro blog e i18n routing integrato. |
-| TypeScript (strict)                            | `astro/tsconfigs/strict`: contenuti e componenti tipizzati end-to-end.                                                                                                                      |
-| [Tailwind CSS 4](https://tailwindcss.com)      | Via `@tailwindcss/vite`. I design token del tema sono CSS custom properties (`--bg`, `--ink`, `--accent`, …) mappate su utility con `@theme inline`.                                        |
-| [@fontsource-variable](https://fontsource.org) | Inter + Space Grotesk self-hosted: nessuna richiesta a CDN esterne, niente layout shift da font remoti.                                                                                     |
+| Tecnologia                                     | Perché                                                                                                                                                                                                                                                                        |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Astro 5](https://astro.build)                 | Sito statico che spedisce **zero JavaScript di default**: in pagina ci sono solo il toggle del tema e l'aggancio del widget chat (~2 KB in tutto); il resto della chat si carica alla prima apertura. Content collections native per il futuro blog e i18n routing integrato. |
+| TypeScript (strict)                            | `astro/tsconfigs/strict`: contenuti e componenti tipizzati end-to-end.                                                                                                                                                                                                        |
+| [Tailwind CSS 4](https://tailwindcss.com)      | Via `@tailwindcss/vite`. I design token del tema sono CSS custom properties (`--bg`, `--ink`, `--accent`, …) mappate su utility con `@theme inline`.                                                                                                                          |
+| [@fontsource-variable](https://fontsource.org) | Inter + Space Grotesk self-hosted: nessuna richiesta a CDN esterne, niente layout shift da font remoti.                                                                                                                                                                       |
 
 Perché non Next.js? Per una one-page statica non servono SSR, server actions o runtime client: Astro produce HTML puro e ottiene punteggi Lighthouse alti _per costruzione_, non per ottimizzazione a posteriori.
 
@@ -64,6 +65,8 @@ npm run dev        # → http://localhost:4321
 | `npm run lint`         | ESLint (flat config, `typescript-eslint` + `eslint-plugin-astro`)      |
 | `npm run format`       | Prettier su tutto il repo (plugin Astro + ordinamento classi Tailwind) |
 | `npm run format:check` | Verifica formattazione senza scrivere (usato in CI)                    |
+| `npm run rag:build`    | Rigenera l'indice embeddings del chatbot (richiede `GEMINI_API_KEY`)   |
+| `npm run rag:check`    | Verifica che l'indice sia allineato ai contenuti (usato in CI)         |
 
 ## Struttura del progetto
 
@@ -76,7 +79,8 @@ npm run dev        # → http://localhost:4321
 │   └── og.png                  # immagine Open Graph 1200×630
 ├── scripts/
 │   ├── generate-og.ps1         # rigenera og.png e apple-touch-icon.png
-│   └── radar/generate.mjs      # generatore delle card del Tech Radar
+│   ├── radar/generate.mjs      # generatore delle card del Tech Radar
+│   └── rag/build-index.ts      # indicizzatore embeddings del chatbot
 └── src/
     ├── components/             # una sezione = un componente .astro
     ├── content.config.ts       # collection: blog (predisposta) + radar
@@ -90,9 +94,12 @@ npm run dev        # → http://localhost:4321
     ├── i18n/ui.ts              # ★ stringhe UI (predisposto per l'inglese)
     ├── layouts/Base.astro      # <html>, tema no-flash, SEO
     ├── pages/
+    │   ├── api/chat.ts         # endpoint serverless del chatbot (unica route SSR)
     │   ├── index.astro         # composizione della one-page
     │   ├── radar.astro         # pagina /radar (Tech Radar)
     │   └── robots.txt.ts       # robots.txt generato dalla config `site`
+    ├── rag/index.json          # indice embeddings precalcolato (committato)
+    ├── scripts/chat-panel.ts   # logica del widget chat (caricata lazy)
     ├── styles/global.css       # design token + Tailwind
     └── types.ts                # tipi condivisi dei contenuti
 ```
@@ -155,6 +162,30 @@ Per eseguirlo in locale: `node scripts/radar/generate.mjs --dry-run` (nessuna AP
 
 Limite noto (accettato per semplicità): la dedup guarda solo le card pubblicate su `main`, quindi una card scartata chiudendo la PR può essere riproposta finché la notizia resta nelle fonti.
 
+## Chatbot RAG «Chiedi a Matteo»
+
+Il widget di chat in basso a destra risponde alle domande dei visitatori usando **solo i contenuti di questo sito**. Non è il CV incollato in un prompt: è una pipeline RAG completa in miniatura, senza vector DB e a costo zero.
+
+```
+build time (locale)                          runtime (Vercel, /api/chat)
+scripts/rag/build-index.ts                   1. origin check + rate limit per IP
+  ├─ chunking di src/data + card radar       2. validazione input (≤500 char, history ≤6 turni)
+  │  (~18 chunk per confini naturali)        3. embedding della domanda
+  ├─ embeddings (gemini-embedding-2,         4. cosine similarity sull'indice in memoria
+  │  768 dimensioni)                         5. top-4 chunk sopra soglia → contesto
+  └─ src/rag/index.json (committato)         6. gemini-2.5-flash con guardrail → risposta
+```
+
+Scelte deliberate:
+
+- **Retrieval vero, dimensionato al problema**: il corpus è minuscolo (~18 chunk), quindi niente vector DB — embeddings precalcolati in un JSON committato e cosine similarity in memoria nella funzione serverless. Lo step `rag:check` in CI fallisce se i contenuti cambiano senza rigenerare l'indice (hash dei chunk).
+- **Solo `/api/chat` è server-rendered**: l'adapter Vercel serve un'unica route con `prerender = false`; tutte le pagine restano statiche (HTML servito dal filesystem, Lighthouse invariato).
+- **Guardrail**: il system prompt vincola le risposte al solo contesto recuperato ("non lo so" + email se l'informazione manca), impone la lingua della domanda e tratta i messaggi come dati, non istruzioni (resistenza alle prompt injection). Lato endpoint: rate limiting per IP (in-memory, sliding window), cap su lunghezza input e token in output, origin check.
+- **JS solo per la chat**: il markup del widget è prerendered; la logica (~2 KB) si carica con un import dinamico alla prima apertura. Pannello accessibile: `role="dialog"`, `aria-live` sui messaggi, Esc per chiudere, focus gestito.
+- **Costo zero**: Gemini free tier (embeddings + generazione), Vercel Hobby; la quota gratuita fa da cap globale naturale oltre al rate limit.
+
+Per lavorarci in locale: `GEMINI_API_KEY` in `.env` (vedi `.env.example`), poi `npm run rag:build` dopo ogni modifica ai contenuti. In produzione la stessa chiave va negli Environment Variables di Vercel.
+
 ## SEO
 
 - Meta `title`/`description`, canonical, Open Graph e Twitter card in [`Seo.astro`](src/components/Seo.astro)
@@ -180,7 +211,7 @@ powershell -ExecutionPolicy Bypass -File scripts/generate-og.ps1
 
 ## CI
 
-Ogni push/PR su `main` esegue: `astro check` → `eslint` → `prettier --check` → `astro build` ([workflow](.github/workflows/ci.yml)).
+Ogni push/PR su `main` esegue: `astro check` → `eslint` → `prettier --check` → `rag:check` → `astro build` ([workflow](.github/workflows/ci.yml)).
 
 ## Deploy
 
@@ -189,8 +220,9 @@ Deploy su **Vercel** (piano hobby, gratuito), in due fasi.
 **Fase 1 — online senza dominio (attuale)**
 
 1. push del repo su GitHub;
-2. su [vercel.com](https://vercel.com) → _Add New… → Project_ → importare `matteocarola-dev`: Astro viene riconosciuto da solo (build `astro build`, output `dist/`);
-3. il sito è servito su `https://matteocarola-dev.vercel.app`.
+2. su [vercel.com](https://vercel.com) → _Add New… → Project_ → importare `matteocarola-dev`: Astro viene riconosciuto da solo (build `astro build`; con l'adapter `@astrojs/vercel` l'output è pagine statiche + la sola funzione `/api/chat`);
+3. in _Settings → Environment Variables_ impostare `GEMINI_API_KEY` (serve al chatbot);
+4. il sito è servito su `https://matteocarola-dev.vercel.app`.
 
 **Fase 2 — dominio custom (quando si vuole)**
 

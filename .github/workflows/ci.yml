@@ -30,5 +30,8 @@ jobs:
       - name: Format check
         run: npm run format:check
 
+      - name: RAG index freshness
+        run: npm run rag:check
+
       - name: Build
         run: npm run build

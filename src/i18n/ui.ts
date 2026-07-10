@@ -36,6 +36,19 @@ export interface Dictionary {
     openMenu: string;
     mainNav: string;
   };
+  chat: {
+    launcherLabel: string;
+    title: string;
+    intro: string;
+    placeholder: string;
+    send: string;
+    thinking: string;
+    close: string;
+    privacyNote: string;
+    errorGeneric: string;
+    errorRateLimited: string;
+    errorQuota: string;
+  };
   footer: { madeWith: string; source: string; noCookies: string };
   labels: { current: string; client: string };
 }
@@ -89,6 +102,21 @@ export const it: Dictionary = {
     toggleTheme: 'Cambia tema (chiaro/scuro)',
     openMenu: 'Apri il menu di navigazione',
     mainNav: 'Navigazione principale',
+  },
+  chat: {
+    launcherLabel: 'Apri la chat "Chiedi a Matteo"',
+    title: 'Chiedi a Matteo',
+    intro:
+      'Ciao! Sono l’assistente di questo sito: rispondo a domande su Matteo — progetti, competenze, esperienza, contatti. Cosa vuoi sapere?',
+    placeholder: 'Fai una domanda su Matteo…',
+    send: 'Invia',
+    thinking: 'Sto cercando la risposta…',
+    close: 'Chiudi la chat',
+    privacyNote: 'Le risposte sono generate con Google Gemini. Non inserire dati personali.',
+    errorGeneric: 'Qualcosa è andato storto. Riprova tra poco.',
+    errorRateLimited: 'Hai fatto molte domande in poco tempo: aspetta un momento e riprova.',
+    errorQuota:
+      'Il servizio ha raggiunto il limite gratuito di oggi. Riprova più tardi o scrivi a Matteo via email.',
   },
   footer: {
     madeWith: 'Fatto con',

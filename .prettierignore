@@ -1,5 +1,11 @@
 dist/
 .astro/
+.vercel/
 node_modules/
 package-lock.json
 public/
+# JSON generato (embedding compatti su una riga): non va formattato
+src/rag/index.json
+# Card generate dalla pipeline del radar (frontmatter con apici doppi):
+# formattarle romperebbe il format check delle PR automatiche.
+src/content/radar/

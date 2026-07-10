@@ -1,6 +1,7 @@
 # build
 dist/
 .astro/
+.vercel/
 
 # dipendenze
 node_modules/
@@ -12,6 +13,7 @@ pnpm-debug.log*
 # ambiente
 .env
 .env.*
+!.env.example
 
 # sistema
 .DS_Store
