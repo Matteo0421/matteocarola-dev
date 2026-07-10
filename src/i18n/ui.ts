@@ -107,7 +107,7 @@ export const it: Dictionary = {
     launcherLabel: 'Apri la chat "Chiedi a Matteo"',
     title: 'Chiedi a Matteo',
     intro:
-      'Ciao! Sono l’assistente di questo sito: rispondo a domande su Matteo — progetti, competenze, esperienza, contatti. Cosa vuoi sapere?',
+      'Sono un piccolo RAG indicizzato su tutto quello che Matteo ha costruito — compreso me stesso. Chiedimi dei suoi progetti, dello stack che usa o di cosa sa fare.',
     placeholder: 'Fai una domanda su Matteo…',
     send: 'Invia',
     thinking: 'Sto cercando la risposta…',
