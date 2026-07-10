@@ -49,7 +49,7 @@ export interface Dictionary {
     errorRateLimited: string;
     errorQuota: string;
   };
-  footer: { madeWith: string; source: string; noCookies: string };
+  footer: { madeWith: string; source: string; noCookies: string; privacy: string };
   labels: { current: string; client: string };
 }
 
@@ -122,6 +122,7 @@ export const it: Dictionary = {
     madeWith: 'Fatto con',
     source: 'Sorgente',
     noCookies: 'Nessun cookie, nessun tracker',
+    privacy: 'Privacy',
   },
   labels: {
     current: 'attuale',
