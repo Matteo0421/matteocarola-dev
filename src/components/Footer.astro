@@ -1,7 +1,10 @@
 ---
-import { profile } from '../data/profile';
-import { ui } from '../i18n/ui';
+import { getProfile } from '../data/profile';
+import { asLocale, localizedPath, useTranslations } from '../i18n/ui';
 
+const profile = getProfile(Astro.currentLocale);
+const ui = useTranslations(Astro.currentLocale);
+const privacyHref = localizedPath('/privacy', asLocale(Astro.currentLocale));
 const year = new Date().getFullYear();
 ---
 
@@ -28,7 +31,9 @@ const year = new Date().getFullYear();
       >
         {ui.footer.source} ↗
       </a>
-      <a href="/privacy" class="text-ink-soft hover:text-accent font-medium">{ui.footer.privacy}</a>
+      <a href={privacyHref} class="text-ink-soft hover:text-accent font-medium"
+        >{ui.footer.privacy}</a
+      >
       <span>{ui.footer.noCookies}</span>
     </p>
   </div>

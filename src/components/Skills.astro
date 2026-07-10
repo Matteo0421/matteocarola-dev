@@ -1,7 +1,10 @@
 ---
-import { skillGroups } from '../data/skills';
-import { ui } from '../i18n/ui';
+import { getSkillGroups } from '../data/skills';
+import { useTranslations } from '../i18n/ui';
 import Section from './Section.astro';
+
+const skillGroups = getSkillGroups(Astro.currentLocale);
+const ui = useTranslations(Astro.currentLocale);
 ---
 
 <Section id="competenze" number="02" title={ui.sections.skills}>

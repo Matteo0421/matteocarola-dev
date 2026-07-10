@@ -1,0 +1,114 @@
+---
+/**
+ * Pagina Tech Radar, condivisa tra le due lingue. L'interfaccia è localizzata;
+ * le CARD restano in italiano (contenuti d'attualità generati dalla pipeline).
+ */
+import { getCollection, render } from 'astro:content';
+import Footer from '../Footer.astro';
+import Header from '../Header.astro';
+import { asLocale, useTranslations } from '../../i18n/ui';
+import Base from '../../layouts/Base.astro';
+
+const locale = asLocale(Astro.currentLocale);
+const ui = useTranslations(locale);
+
+const entries = (await getCollection('radar')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+/* Il body del file .md è la nota personale, opzionale: si renderizza solo se presente. */
+const cards = await Promise.all(
+  entries.map(async (entry) => {
+    const { Content } = await render(entry);
+    return { entry, Content, hasNote: (entry.body ?? '').trim() !== '' };
+  }),
+);
+
+const dateFormat = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'it-IT', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+---
+
+<Base title={ui.radar.metaTitle} description={ui.radar.metaDescription}>
+  <a
+    href="#main"
+    class="bg-accent text-on-accent fixed top-4 left-4 z-[100] -translate-y-24 rounded-md px-4 py-2 text-sm font-medium transition-transform focus:translate-y-0"
+  >
+    {ui.a11y.skipToContent}
+  </a>
+  <Header />
+  <main id="main">
+    <section class="py-16 md:py-24" aria-labelledby="radar-title">
+      <div class="mx-auto max-w-5xl px-5 md:px-8">
+        <h1
+          id="radar-title"
+          class="font-display text-ink text-4xl font-bold tracking-tight md:text-5xl"
+        >
+          {ui.radar.title}<span class="text-accent">.</span>
+        </h1>
+        <p class="text-ink-soft mt-5 max-w-3xl text-[15px] leading-relaxed md:text-base">
+          {ui.radar.intro}
+        </p>
+        <p class="text-ink-mute mt-3 max-w-3xl text-[13px] leading-relaxed">
+          {ui.radar.howItWorks}
+        </p>
+
+        <div class="border-line mt-12 border-t">
+          {
+            cards.length === 0 ? (
+              <p class="text-ink-mute py-12 text-[15px]">{ui.radar.empty}</p>
+            ) : (
+              <div class="divide-line divide-y">
+                {cards.map(({ entry, Content, hasNote }) => (
+                  <article class="py-8">
+                    <p class="text-ink-mute text-[13px]">
+                      <time datetime={entry.data.pubDate.toISOString().slice(0, 10)}>
+                        {dateFormat.format(entry.data.pubDate)}
+                      </time>
+                      <span aria-hidden="true"> · </span>
+                      <span>{entry.data.sourceName}</span>
+                    </p>
+                    <h2 class="font-display text-ink mt-2 text-xl font-bold md:text-2xl">
+                      <a
+                        href={entry.data.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="hover:text-accent transition-colors"
+                      >
+                        {entry.data.title}
+                        <span class="text-accent ml-1 text-base" aria-hidden="true">
+                          ↗
+                        </span>
+                      </a>
+                    </h2>
+                    <p class="text-ink-soft mt-3 max-w-3xl text-[15px] leading-relaxed">
+                      {entry.data.summary}
+                    </p>
+                    {hasNote && (
+                      <div class="border-accent mt-4 max-w-3xl border-l-2 pl-4">
+                        <p class="text-accent text-[12px] font-semibold tracking-wide uppercase">
+                          {ui.radar.noteLabel}
+                        </p>
+                        <div class="text-ink-soft mt-1 text-[15px] leading-relaxed italic">
+                          <Content />
+                        </div>
+                      </div>
+                    )}
+                    <ul class="mt-5 flex flex-wrap gap-2" role="list">
+                      {entry.data.tags.map((tag) => (
+                        <li class="chip">{tag}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            )
+          }
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>

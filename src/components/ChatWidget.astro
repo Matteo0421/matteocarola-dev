@@ -6,7 +6,9 @@
  * src/scripts/chat-panel.ts e viene caricata con un import dinamico SOLO alla
  * prima apertura, così le pagine restano a zero JS aggiuntivo fino al click.
  */
-import { ui } from '../i18n/ui';
+import { useTranslations } from '../i18n/ui';
+
+const ui = useTranslations(Astro.currentLocale);
 
 const strings = {
   thinking: ui.chat.thinking,

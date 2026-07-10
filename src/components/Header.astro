@@ -1,11 +1,19 @@
 ---
-import { ui } from '../i18n/ui';
+import { asLocale, localizedPath, useTranslations } from '../i18n/ui';
 import ThemeToggle from './ThemeToggle.astro';
+
+const locale = asLocale(Astro.currentLocale);
+const ui = useTranslations(locale);
+const homeHref = locale === 'en' ? '/en/' : '/';
+// Toggle lingua: link alla versione dell'altra lingua della pagina corrente.
+const otherLocale = locale === 'en' ? 'it' : 'en';
+const otherHref = localizedPath(Astro.url.pathname, otherLocale);
+const otherLabel = otherLocale.toUpperCase();
 ---
 
 <header class="border-line bg-bg/85 sticky top-0 z-50 border-b backdrop-blur-sm">
   <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-5 md:px-8">
-    <a href="/" class="font-display text-lg font-bold tracking-tight">
+    <a href={homeHref} class="font-display text-lg font-bold tracking-tight">
       MC<span class="text-accent">·</span>
     </a>
 
@@ -29,6 +37,15 @@ import ThemeToggle from './ThemeToggle.astro';
           }
         </ul>
       </nav>
+
+      <a
+        href={otherHref}
+        class="border-line text-ink-soft hover:border-ink-mute hover:text-ink flex h-9 items-center justify-center rounded-md border px-2.5 text-[13px] font-semibold transition-colors"
+        aria-label={ui.a11y.switchLanguage}
+        hreflang={otherLocale}
+      >
+        {otherLabel}
+      </a>
 
       <ThemeToggle />
 

@@ -1,0 +1,38 @@
+---
+/**
+ * Composizione della one-page, condivisa tra le due lingue.
+ * La lingua è determinata da Astro.currentLocale (dall'URL): i componenti
+ * figli pescano da soli stringhe e contenuti nella lingua giusta.
+ */
+import About from '../About.astro';
+import Contact from '../Contact.astro';
+import Experience from '../Experience.astro';
+import Footer from '../Footer.astro';
+import Header from '../Header.astro';
+import Hero from '../Hero.astro';
+import Projects from '../Projects.astro';
+import Skills from '../Skills.astro';
+import { useTranslations } from '../../i18n/ui';
+import Base from '../../layouts/Base.astro';
+
+const ui = useTranslations(Astro.currentLocale);
+---
+
+<Base title={ui.meta.title} description={ui.meta.description}>
+  <a
+    href="#main"
+    class="bg-accent text-on-accent fixed top-4 left-4 z-[100] -translate-y-24 rounded-md px-4 py-2 text-sm font-medium transition-transform focus:translate-y-0"
+  >
+    {ui.a11y.skipToContent}
+  </a>
+  <Header />
+  <main id="main">
+    <Hero />
+    <About />
+    <Skills />
+    <Projects />
+    <Experience />
+    <Contact />
+  </main>
+  <Footer />
+</Base>

@@ -1,142 +1,112 @@
 ---
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { profile } from '../data/profile';
-import { ui } from '../i18n/ui';
-import Base from '../layouts/Base.astro';
+import PrivacyPage from '../components/pages/PrivacyPage.astro';
+import { getProfile } from '../data/profile';
 
-const title = 'Privacy — Matteo Carola';
-const description =
-  'Informativa privacy di matteocarola.com: nessun cookie né tracker. Uso dei dati per il chatbot (Google Gemini) e i log di hosting (Vercel).';
-const updated = 'Luglio 2026';
+const profile = getProfile('it');
 ---
 
-<Base {title} {description}>
-  <a
-    href="#main"
-    class="bg-accent text-on-accent fixed top-4 left-4 z-[100] -translate-y-24 rounded-md px-4 py-2 text-sm font-medium transition-transform focus:translate-y-0"
-  >
-    {ui.a11y.skipToContent}
-  </a>
-  <Header />
-  <main id="main">
-    <section class="py-16 md:py-24" aria-labelledby="privacy-title">
-      <div class="mx-auto max-w-3xl px-5 md:px-8">
-        <h1
-          id="privacy-title"
-          class="font-display text-ink text-4xl font-bold tracking-tight md:text-5xl"
-        >
-          Privacy<span class="text-accent">.</span>
-        </h1>
-        <p class="text-ink-mute mt-4 text-[13px]">Ultimo aggiornamento: {updated}</p>
-        <p class="text-ink-soft mt-6 text-[15px] leading-relaxed md:text-base">
-          Questo è un sito personale e vetrina. È pensato per raccogliere il meno possibile: <strong
-            class="text-ink font-semibold"
-            >nessun cookie, nessun tracker, nessun sistema di analytics</strong
-          > e nessun modulo che salvi i tuoi dati. L'unica cosa memorizzata nel tuo browser è la preferenza
-          tema chiaro/scuro (in <code class="text-ink">localStorage</code>), che resta sul tuo
-          dispositivo e non viene mai inviata da nessuna parte. Di seguito, in modo trasparente,
-          cosa succede ai dati quando visiti il sito.
-        </p>
+<PrivacyPage>
+  <p class="text-ink-soft mt-6 text-[15px] leading-relaxed md:text-base">
+    Questo è un sito personale e vetrina. È pensato per raccogliere il meno possibile: <strong
+      class="text-ink font-semibold"
+      >nessun cookie, nessun tracker, nessun sistema di analytics</strong
+    > e nessun modulo che salvi i tuoi dati. L'unica cosa memorizzata nel tuo browser è la preferenza
+    tema chiaro/scuro (in <code class="text-ink">localStorage</code>), che resta sul tuo dispositivo
+    e non viene mai inviata da nessuna parte. Di seguito, in modo trasparente, cosa succede ai dati
+    quando visiti il sito.
+  </p>
 
-        <div class="mt-12 space-y-10">
-          <section aria-labelledby="p-titolare">
-            <h2 id="p-titolare" class="font-display text-ink text-xl font-bold md:text-2xl">
-              Titolare
-            </h2>
-            <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
-              Il titolare del trattamento è {profile.name}. Per qualsiasi richiesta relativa ai tuoi
-              dati puoi scrivere a
-              <a href={`mailto:${profile.email}`} class="text-accent font-medium hover:underline"
-                >{profile.email}</a
-              >.
-            </p>
-          </section>
-
-          <section aria-labelledby="p-navigazione">
-            <h2 id="p-navigazione" class="font-display text-ink text-xl font-bold md:text-2xl">
-              Dati di navigazione e hosting
-            </h2>
-            <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
-              Il sito è ospitato su <strong class="text-ink font-semibold">Vercel</strong>. Come
-              ogni server web, l'infrastruttura di hosting registra log tecnici che possono
-              includere l'indirizzo IP, la data e ora della richiesta, la pagina richiesta e
-              informazioni sul browser. Questi dati servono a far funzionare e proteggere il sito
-              (ad esempio per limitare gli abusi sul chatbot) e non vengono usati per profilarti né
-              incrociati con altre fonti. La base giuridica è il legittimo interesse a mantenere il
-              servizio sicuro e operativo.
-            </p>
-          </section>
-
-          <section aria-labelledby="p-chatbot">
-            <h2 id="p-chatbot" class="font-display text-ink text-xl font-bold md:text-2xl">
-              Chatbot «Chiedi a Matteo»
-            </h2>
-            <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
-              Il sito include un assistente che risponde a domande su di me. Quando scrivi un
-              messaggio, il testo della tua domanda e gli ultimi messaggi della conversazione
-              vengono inviati a <strong class="text-ink font-semibold">Google</strong> (API Google Gemini)
-              per generare la risposta. La richiesta parte dal server del sito, quindi Google riceve il
-              <em>contenuto</em> del messaggio ma <strong class="text-ink font-semibold"
-                >non il tuo indirizzo IP</strong
-              >. Non uso questi messaggi per altri scopi e non li associo alla tua identità.
-            </p>
-            <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
-              Il servizio è usato nel piano gratuito di Google: in base alle condizioni di Google, i
-              contenuti inviati possono essere conservati e utilizzati da Google per migliorare i
-              propri servizi, e possono essere esaminati da personale umano. Per questo motivo
-              <strong class="text-ink font-semibold"
-                >non inserire nel chatbot dati personali, riservati o sensibili</strong
-              >. Il trattamento da parte di Google è regolato dalle sue policy:
-              <a
-                href="https://ai.google.dev/gemini-api/terms"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-accent font-medium hover:underline">condizioni dell'API Gemini</a
-              >
-              e
-              <a
-                href="https://policies.google.com/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-accent font-medium hover:underline">informativa privacy di Google</a
-              >.
-            </p>
-          </section>
-
-          <section aria-labelledby="p-terzi">
-            <h2 id="p-terzi" class="font-display text-ink text-xl font-bold md:text-2xl">
-              Servizi di terze parti
-            </h2>
-            <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
-              Oltre a Vercel (hosting) e Google (chatbot), il sito non carica risorse da terze
-              parti: i font sono ospitati direttamente sul sito e non ci sono CDN esterne, pixel o
-              widget di tracciamento. I collegamenti verso profili esterni (GitHub, LinkedIn)
-              portano a servizi che applicano le proprie informative sulla privacy.
-            </p>
-          </section>
-
-          <section aria-labelledby="p-diritti">
-            <h2 id="p-diritti" class="font-display text-ink text-xl font-bold md:text-2xl">
-              I tuoi diritti
-            </h2>
-            <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
-              Ai sensi del GDPR puoi chiedere in qualsiasi momento l'accesso, la rettifica o la
-              cancellazione dei tuoi dati, oppure opporti al trattamento, scrivendo a
-              <a href={`mailto:${profile.email}`} class="text-accent font-medium hover:underline"
-                >{profile.email}</a
-              >. Dato che il sito non tiene un archivio di utenti, nella pratica gli unici dati
-              riconducibili a te sono gli eventuali log tecnici di hosting.
-            </p>
-          </section>
-        </div>
-
-        <p class="border-line text-ink-mute mt-14 border-t pt-8 text-[13px] leading-relaxed">
-          Questa pagina può essere aggiornata se cambiano gli strumenti usati dal sito. Le modifiche
-          rilevanti saranno riportate qui con la data di aggiornamento.
-        </p>
-      </div>
+  <div class="mt-12 space-y-10">
+    <section aria-labelledby="p-titolare">
+      <h2 id="p-titolare" class="font-display text-ink text-xl font-bold md:text-2xl">Titolare</h2>
+      <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
+        Il titolare del trattamento è {profile.name}. Per qualsiasi richiesta relativa ai tuoi dati
+        puoi scrivere a
+        <a href={`mailto:${profile.email}`} class="text-accent font-medium hover:underline"
+          >{profile.email}</a
+        >.
+      </p>
     </section>
-  </main>
-  <Footer />
-</Base>
+
+    <section aria-labelledby="p-navigazione">
+      <h2 id="p-navigazione" class="font-display text-ink text-xl font-bold md:text-2xl">
+        Dati di navigazione e hosting
+      </h2>
+      <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
+        Il sito è ospitato su <strong class="text-ink font-semibold">Vercel</strong>. Come ogni
+        server web, l'infrastruttura di hosting registra log tecnici che possono includere
+        l'indirizzo IP, la data e ora della richiesta, la pagina richiesta e informazioni sul
+        browser. Questi dati servono a far funzionare e proteggere il sito (ad esempio per limitare
+        gli abusi sul chatbot) e non vengono usati per profilarti né incrociati con altre fonti. La
+        base giuridica è il legittimo interesse a mantenere il servizio sicuro e operativo.
+      </p>
+    </section>
+
+    <section aria-labelledby="p-chatbot">
+      <h2 id="p-chatbot" class="font-display text-ink text-xl font-bold md:text-2xl">
+        Chatbot «Chiedi a Matteo»
+      </h2>
+      <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
+        Il sito include un assistente che risponde a domande su di me. Quando scrivi un messaggio,
+        il testo della tua domanda e gli ultimi messaggi della conversazione vengono inviati a <strong
+          class="text-ink font-semibold">Google</strong
+        > (API Google Gemini) per generare la risposta. La richiesta parte dal server del sito, quindi
+        Google riceve il <em>contenuto</em> del messaggio ma <strong class="text-ink font-semibold"
+          >non il tuo indirizzo IP</strong
+        >. Non uso questi messaggi per altri scopi e non li associo alla tua identità.
+      </p>
+      <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
+        Il servizio è usato nel piano gratuito di Google: in base alle condizioni di Google, i
+        contenuti inviati possono essere conservati e utilizzati da Google per migliorare i propri
+        servizi, e possono essere esaminati da personale umano. Per questo motivo
+        <strong class="text-ink font-semibold"
+          >non inserire nel chatbot dati personali, riservati o sensibili</strong
+        >. Il trattamento da parte di Google è regolato dalle sue policy:
+        <a
+          href="https://ai.google.dev/gemini-api/terms"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-accent font-medium hover:underline">condizioni dell'API Gemini</a
+        >
+        e
+        <a
+          href="https://policies.google.com/privacy"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-accent font-medium hover:underline">informativa privacy di Google</a
+        >.
+      </p>
+    </section>
+
+    <section aria-labelledby="p-terzi">
+      <h2 id="p-terzi" class="font-display text-ink text-xl font-bold md:text-2xl">
+        Servizi di terze parti
+      </h2>
+      <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
+        Oltre a Vercel (hosting) e Google (chatbot), il sito non carica risorse da terze parti: i
+        font sono ospitati direttamente sul sito e non ci sono CDN esterne, pixel o widget di
+        tracciamento. I collegamenti verso profili esterni (GitHub, LinkedIn) portano a servizi che
+        applicano le proprie informative sulla privacy.
+      </p>
+    </section>
+
+    <section aria-labelledby="p-diritti">
+      <h2 id="p-diritti" class="font-display text-ink text-xl font-bold md:text-2xl">
+        I tuoi diritti
+      </h2>
+      <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
+        Ai sensi del GDPR puoi chiedere in qualsiasi momento l'accesso, la rettifica o la
+        cancellazione dei tuoi dati, oppure opporti al trattamento, scrivendo a
+        <a href={`mailto:${profile.email}`} class="text-accent font-medium hover:underline"
+          >{profile.email}</a
+        >. Dato che il sito non tiene un archivio di utenti, nella pratica gli unici dati
+        riconducibili a te sono gli eventuali log tecnici di hosting.
+      </p>
+    </section>
+  </div>
+
+  <p class="border-line text-ink-mute mt-14 border-t pt-8 text-[13px] leading-relaxed">
+    Questa pagina può essere aggiornata se cambiano gli strumenti usati dal sito. Le modifiche
+    rilevanti saranno riportate qui con la data di aggiornamento.
+  </p>
+</PrivacyPage>

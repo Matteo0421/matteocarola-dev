@@ -1,0 +1,54 @@
+---
+/**
+ * Cornice condivisa della pagina privacy (Base + header + titolo + footer).
+ * La prosa, che differisce del tutto tra le lingue, arriva via <slot /> dalle
+ * due pagine (src/pages/privacy.astro e src/pages/en/privacy.astro).
+ */
+import Footer from '../Footer.astro';
+import Header from '../Header.astro';
+import { asLocale, useTranslations } from '../../i18n/ui';
+import Base from '../../layouts/Base.astro';
+
+const locale = asLocale(Astro.currentLocale);
+const ui = useTranslations(locale);
+const isEn = locale === 'en';
+
+const meta = isEn
+  ? {
+      title: 'Privacy — Matteo Carola',
+      description:
+        'Privacy notice for matteocarola.com: no cookies or trackers. How data is used for the chatbot (Google Gemini) and hosting logs (Vercel).',
+    }
+  : {
+      title: 'Privacy — Matteo Carola',
+      description:
+        'Informativa privacy di matteocarola.com: nessun cookie né tracker. Uso dei dati per il chatbot (Google Gemini) e i log di hosting (Vercel).',
+    };
+const updatedLabel = isEn ? 'Last updated' : 'Ultimo aggiornamento';
+const updated = isEn ? 'July 2026' : 'Luglio 2026';
+---
+
+<Base title={meta.title} description={meta.description}>
+  <a
+    href="#main"
+    class="bg-accent text-on-accent fixed top-4 left-4 z-[100] -translate-y-24 rounded-md px-4 py-2 text-sm font-medium transition-transform focus:translate-y-0"
+  >
+    {ui.a11y.skipToContent}
+  </a>
+  <Header />
+  <main id="main">
+    <section class="py-16 md:py-24" aria-labelledby="privacy-title">
+      <div class="mx-auto max-w-3xl px-5 md:px-8">
+        <h1
+          id="privacy-title"
+          class="font-display text-ink text-4xl font-bold tracking-tight md:text-5xl"
+        >
+          Privacy<span class="text-accent">.</span>
+        </h1>
+        <p class="text-ink-mute mt-4 text-[13px]">{updatedLabel}: {updated}</p>
+        <slot />
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>

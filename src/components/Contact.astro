@@ -1,7 +1,10 @@
 ---
-import { profile } from '../data/profile';
-import { ui } from '../i18n/ui';
+import { getProfile } from '../data/profile';
+import { useTranslations } from '../i18n/ui';
 import Section from './Section.astro';
+
+const profile = getProfile(Astro.currentLocale);
+const ui = useTranslations(Astro.currentLocale);
 ---
 
 <Section id="contatti" number="05" title={ui.sections.contact}>

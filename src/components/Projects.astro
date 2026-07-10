@@ -1,7 +1,10 @@
 ---
-import { projects } from '../data/projects';
-import { ui } from '../i18n/ui';
+import { getProjects } from '../data/projects';
+import { useTranslations } from '../i18n/ui';
 import Section from './Section.astro';
+
+const projects = getProjects(Astro.currentLocale);
+const ui = useTranslations(Astro.currentLocale);
 ---
 
 <Section id="progetti" number="03" title={ui.sections.projects}>
@@ -34,7 +37,7 @@ import Section from './Section.astro';
           </div>
           <p
             class="font-display text-ink-mute row-start-1 text-sm font-bold md:col-start-2 md:text-right"
-            aria-label={`Anno: ${project.year}`}
+            aria-label={`${ui.labels.year}: ${project.year}`}
           >
             {project.year}
           </p>

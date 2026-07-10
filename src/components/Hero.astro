@@ -1,6 +1,9 @@
 ---
-import { profile } from '../data/profile';
-import { ui } from '../i18n/ui';
+import { getProfile } from '../data/profile';
+import { useTranslations } from '../i18n/ui';
+
+const profile = getProfile(Astro.currentLocale);
+const ui = useTranslations(Astro.currentLocale);
 ---
 
 <section id="top" class="mx-auto max-w-5xl px-5 pt-16 pb-16 md:px-8 md:pt-28 md:pb-24">

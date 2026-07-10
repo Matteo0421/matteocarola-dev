@@ -1,0 +1,109 @@
+---
+import PrivacyPage from '../../components/pages/PrivacyPage.astro';
+import { getProfile } from '../../data/profile';
+
+const profile = getProfile('en');
+---
+
+<PrivacyPage>
+  <p class="text-ink-soft mt-6 text-[15px] leading-relaxed md:text-base">
+    This is a personal portfolio site. It's designed to collect as little as possible: <strong
+      class="text-ink font-semibold">no cookies, no trackers, no analytics</strong
+    > and no form that stores your data. The only thing kept in your browser is your light/dark theme
+    preference (in <code class="text-ink">localStorage</code>), which stays on your device and is
+    never sent anywhere. Below, transparently, is what happens to data when you visit the site.
+  </p>
+
+  <div class="mt-12 space-y-10">
+    <section aria-labelledby="p-controller">
+      <h2 id="p-controller" class="font-display text-ink text-xl font-bold md:text-2xl">
+        Data controller
+      </h2>
+      <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
+        The data controller is {profile.name}. For any request about your data you can write to
+        <a href={`mailto:${profile.email}`} class="text-accent font-medium hover:underline"
+          >{profile.email}</a
+        >.
+      </p>
+    </section>
+
+    <section aria-labelledby="p-hosting">
+      <h2 id="p-hosting" class="font-display text-ink text-xl font-bold md:text-2xl">
+        Browsing data and hosting
+      </h2>
+      <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
+        The site is hosted on <strong class="text-ink font-semibold">Vercel</strong>. Like any web
+        server, the hosting infrastructure records technical logs that may include your IP address,
+        the date and time of the request, the requested page and browser information. This data is
+        used to run and protect the site (for example to limit abuse of the chatbot) and is not used
+        to profile you or cross-referenced with other sources. The legal basis is the legitimate
+        interest in keeping the service secure and operational.
+      </p>
+    </section>
+
+    <section aria-labelledby="p-chatbot">
+      <h2 id="p-chatbot" class="font-display text-ink text-xl font-bold md:text-2xl">
+        «Ask Matteo» chatbot
+      </h2>
+      <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
+        The site includes an assistant that answers questions about me. When you type a message, the
+        text of your question and the most recent messages of the conversation are sent to <strong
+          class="text-ink font-semibold">Google</strong
+        > (Google Gemini API) to generate the answer. The request is made from the site's server, so Google
+        receives the <em>content</em> of the message but <strong class="text-ink font-semibold"
+          >not your IP address</strong
+        >. I don't use these messages for any other purpose and I don't link them to your identity.
+      </p>
+      <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
+        The service runs on Google's free tier: under Google's terms, the content sent may be
+        retained and used by Google to improve its services, and may be reviewed by human staff. For
+        this reason,
+        <strong class="text-ink font-semibold"
+          >do not enter personal, confidential or sensitive data in the chatbot</strong
+        >. Google's processing is governed by its policies:
+        <a
+          href="https://ai.google.dev/gemini-api/terms"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-accent font-medium hover:underline">Gemini API terms</a
+        >
+        and
+        <a
+          href="https://policies.google.com/privacy"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-accent font-medium hover:underline">Google privacy policy</a
+        >.
+      </p>
+    </section>
+
+    <section aria-labelledby="p-third-parties">
+      <h2 id="p-third-parties" class="font-display text-ink text-xl font-bold md:text-2xl">
+        Third-party services
+      </h2>
+      <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
+        Beyond Vercel (hosting) and Google (chatbot), the site loads no third-party resources: fonts
+        are hosted directly on the site and there are no external CDNs, pixels or tracking widgets.
+        Links to external profiles (GitHub, LinkedIn) lead to services that apply their own privacy
+        policies.
+      </p>
+    </section>
+
+    <section aria-labelledby="p-rights">
+      <h2 id="p-rights" class="font-display text-ink text-xl font-bold md:text-2xl">Your rights</h2>
+      <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
+        Under the GDPR you can request access to, rectification or erasure of your data at any time,
+        or object to processing, by writing to
+        <a href={`mailto:${profile.email}`} class="text-accent font-medium hover:underline"
+          >{profile.email}</a
+        >. Since the site keeps no user database, in practice the only data attributable to you is
+        any technical hosting logs.
+      </p>
+    </section>
+  </div>
+
+  <p class="border-line text-ink-mute mt-14 border-t pt-8 text-[13px] leading-relaxed">
+    This page may be updated if the tools used by the site change. Significant changes will be noted
+    here with the update date.
+  </p>
+</PrivacyPage>
