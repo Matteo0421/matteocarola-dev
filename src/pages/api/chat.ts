@@ -45,11 +45,16 @@ const RATE_WINDOWS = [
 const RATE_MAX_WINDOW_MS = Math.max(...RATE_WINDOWS.map((w) => w.windowMs));
 const rateHits = new Map<string, number[]>();
 
-// Cap globale per-istanza: numero massimo di richieste/ora che possono
-// innescare chiamate a Gemini sommando TUTTI gli IP. Protegge la quota anche
-// da abusi distribuiti (es. IPv6 con molti indirizzi) che aggirano il per-IP.
-const GLOBAL_WINDOW_MS = 3_600_000;
-const GLOBAL_MAX_PER_HOUR = 240;
+// Cap globale per-istanza: massimo di richieste che possono innescare chiamate
+// a Gemini sommando TUTTI gli IP. Protegge la quota anche da abusi distribuiti
+// (es. IPv6 con molti indirizzi) che aggirano il per-IP. Due finestre: una
+// oraria (anti-burst) e una giornaliera dimensionata sotto la quota free tier
+// di Gemini, così il tetto reale non è mai la quota del giorno.
+const GLOBAL_WINDOWS = [
+  { windowMs: 3_600_000, max: 120 },
+  { windowMs: 86_400_000, max: 200 },
+] as const;
+const GLOBAL_MAX_WINDOW_MS = Math.max(...GLOBAL_WINDOWS.map((w) => w.windowMs));
 let globalHits: number[] = [];
 
 interface HistoryTurn {
@@ -131,10 +136,12 @@ function checkRateLimit(key: string, now: number): number | null {
   return null;
 }
 
-/** Cap globale per-istanza sulle chiamate a Gemini. true = superato. */
+/** Cap globale per-istanza sulle chiamate a Gemini (orario + giornaliero). true = superato. */
 function globalLimitExceeded(now: number): boolean {
-  globalHits = globalHits.filter((t) => now - t < GLOBAL_WINDOW_MS);
-  if (globalHits.length >= GLOBAL_MAX_PER_HOUR) return true;
+  globalHits = globalHits.filter((t) => now - t < GLOBAL_MAX_WINDOW_MS);
+  for (const { windowMs, max } of GLOBAL_WINDOWS) {
+    if (globalHits.filter((t) => now - t < windowMs).length >= max) return true;
+  }
   globalHits.push(now);
   return false;
 }
@@ -286,6 +293,12 @@ export const POST: APIRoute = async (context) => {
     allowed.add('http://127.0.0.1:4321');
   }
   if (!origin || !allowed.has(origin)) return json({ error: 'forbidden' }, 403);
+
+  // Rifiuta subito body sproporzionati (il messaggio utile è ≤500 char):
+  // evita di bufferizzare e parsare payload enormi.
+  if (Number(request.headers.get('content-length') ?? 0) > 16_384) {
+    return json({ error: 'invalid' }, 413);
+  }
 
   const now = Date.now();
   const retryAfter = checkRateLimit(getClientKey(context), now);

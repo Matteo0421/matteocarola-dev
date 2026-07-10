@@ -33,8 +33,10 @@ const updated = 'Luglio 2026';
           Questo è un sito personale e vetrina. È pensato per raccogliere il meno possibile: <strong
             class="text-ink font-semibold"
             >nessun cookie, nessun tracker, nessun sistema di analytics</strong
-          > e nessun modulo che salvi i tuoi dati. Di seguito, in modo trasparente, cosa succede ai dati
-          quando visiti il sito.
+          > e nessun modulo che salvi i tuoi dati. L'unica cosa memorizzata nel tuo browser è la preferenza
+          tema chiaro/scuro (in <code class="text-ink">localStorage</code>), che resta sul tuo
+          dispositivo e non viene mai inviata da nessuna parte. Di seguito, in modo trasparente,
+          cosa succede ai dati quando visiti il sito.
         </p>
 
         <div class="mt-12 space-y-10">
@@ -74,13 +76,16 @@ const updated = 'Luglio 2026';
               Il sito include un assistente che risponde a domande su di me. Quando scrivi un
               messaggio, il testo della tua domanda e gli ultimi messaggi della conversazione
               vengono inviati a <strong class="text-ink font-semibold">Google</strong> (API Google Gemini)
-              per generare la risposta. Non uso questi messaggi per altri scopi e non li associo alla
-              tua identità.
+              per generare la risposta. La richiesta parte dal server del sito, quindi Google riceve il
+              <em>contenuto</em> del messaggio ma <strong class="text-ink font-semibold"
+                >non il tuo indirizzo IP</strong
+              >. Non uso questi messaggi per altri scopi e non li associo alla tua identità.
             </p>
             <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
               Il servizio è usato nel piano gratuito di Google: in base alle condizioni di Google, i
-              contenuti inviati possono essere utilizzati da Google per migliorare i propri servizi.
-              Per questo motivo <strong class="text-ink font-semibold"
+              contenuti inviati possono essere conservati e utilizzati da Google per migliorare i
+              propri servizi, e possono essere esaminati da personale umano. Per questo motivo
+              <strong class="text-ink font-semibold"
                 >non inserire nel chatbot dati personali, riservati o sensibili</strong
               >. Il trattamento da parte di Google è regolato dalle sue policy:
               <a
