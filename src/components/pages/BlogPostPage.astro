@@ -1,0 +1,63 @@
+---
+/**
+ * Pagina del singolo post, condivisa tra le due lingue: riceve l'entry
+ * già risolta dalla shell (che fa getStaticPaths per la propria lingua).
+ */
+import { render, type CollectionEntry } from 'astro:content';
+import Footer from '../Footer.astro';
+import Header from '../Header.astro';
+import { asLocale, useTranslations } from '../../i18n/ui';
+import Base from '../../layouts/Base.astro';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const locale = asLocale(Astro.currentLocale);
+const ui = useTranslations(locale);
+const basePath = locale === 'en' ? '/en/blog' : '/blog';
+
+const { Content } = await render(post);
+
+const dateFormat = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'it-IT', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+---
+
+<Base title={`${post.data.title} — Matteo Carola`} description={post.data.description}>
+  <a
+    href="#main"
+    class="bg-accent text-on-accent fixed top-4 left-4 z-[100] -translate-y-24 rounded-md px-4 py-2 text-sm font-medium transition-transform focus:translate-y-0"
+  >
+    {ui.a11y.skipToContent}
+  </a>
+  <Header />
+  <main id="main">
+    <article class="py-16 md:py-24">
+      <div class="mx-auto max-w-3xl px-5 md:px-8">
+        <p class="text-ink-mute text-[13px]">
+          <a href={basePath} class="text-accent font-medium hover:underline"
+            >← {ui.blog.backToBlog}</a
+          >
+          <span aria-hidden="true"> · </span>
+          <time datetime={post.data.pubDate.toISOString().slice(0, 10)}>
+            {dateFormat.format(post.data.pubDate)}
+          </time>
+        </p>
+        <h1
+          class="font-display text-ink mt-4 text-3xl leading-tight font-bold tracking-tight md:text-5xl"
+        >
+          {post.data.title}
+        </h1>
+        <div class="bg-accent mt-6 h-[3px] w-14" aria-hidden="true"></div>
+        <div class="post mt-8">
+          <Content />
+        </div>
+      </div>
+    </article>
+  </main>
+  <Footer />
+</Base>

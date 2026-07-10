@@ -87,4 +87,46 @@ body {
   .chip {
     @apply border-line bg-bg-alt text-ink-soft inline-flex rounded-md border px-2.5 py-1 text-[13px] leading-5;
   }
+
+  /* Corpo dei post del blog: stile per l'HTML generato dal Markdown. */
+  .post {
+    @apply text-ink-soft text-[15px] leading-relaxed md:text-base;
+  }
+  .post h2 {
+    @apply font-display text-ink mt-10 text-xl font-bold md:text-2xl;
+  }
+  .post h3 {
+    @apply font-display text-ink mt-8 text-lg font-bold;
+  }
+  .post p {
+    @apply mt-4;
+  }
+  .post a {
+    @apply text-accent font-medium hover:underline;
+  }
+  .post ul,
+  .post ol {
+    @apply mt-4 space-y-2 pl-5;
+  }
+  .post ul {
+    @apply list-disc;
+  }
+  .post ol {
+    @apply list-decimal;
+  }
+  .post code {
+    @apply bg-bg-alt border-line text-ink rounded border px-1.5 py-0.5 text-[13px];
+  }
+  .post pre {
+    @apply border-line bg-bg-alt mt-4 overflow-x-auto rounded-lg border p-4 text-[13px] leading-relaxed;
+  }
+  .post pre code {
+    @apply border-0 bg-transparent p-0;
+  }
+  .post blockquote {
+    @apply border-accent text-ink-mute mt-4 border-l-2 pl-4 italic;
+  }
+  .post strong {
+    @apply text-ink font-semibold;
+  }
 }

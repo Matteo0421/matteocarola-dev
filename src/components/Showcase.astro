@@ -1,0 +1,122 @@
+---
+/**
+ * "Dietro le quinte": mette in vetrina le due funzionalità GenAI del sito
+ * (chatbot RAG e Tech Radar) con card che spiegano cosa sono, CTA per
+ * provarle e link ai post del blog che raccontano come sono costruite.
+ */
+import { asLocale, localizedPath, useTranslations } from '../i18n/ui';
+import Section from './Section.astro';
+
+const locale = asLocale(Astro.currentLocale);
+const ui = useTranslations(locale);
+const radarHref = localizedPath('/radar', locale);
+const chatPostHref = localizedPath('/blog/chatbot-rag', locale);
+const radarPostHref = localizedPath('/blog/tech-radar', locale);
+---
+
+<Section id="dietro-le-quinte" number="04" title={ui.showcase.title}>
+  <p class="text-ink-soft max-w-2xl text-[15px] leading-relaxed md:text-base">
+    {ui.showcase.intro}
+  </p>
+  <div class="mt-10 grid gap-6 md:grid-cols-2">
+    <article class="border-line bg-bg-alt flex flex-col rounded-xl border p-6 md:p-8">
+      <div class="flex items-center gap-3">
+        <span
+          class="bg-accent/10 text-accent flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+          aria-hidden="true"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </span>
+        <h3 class="font-display text-ink text-lg font-bold md:text-xl">
+          {ui.showcase.chatTitle}
+        </h3>
+      </div>
+      <p class="text-ink-soft mt-4 flex-1 text-[15px] leading-relaxed">
+        {ui.showcase.chatDescription}
+      </p>
+      <ul class="mt-5 flex flex-wrap gap-2" role="list">
+        <li class="chip">RAG</li>
+        <li class="chip">Embeddings</li>
+        <li class="chip">Serverless</li>
+        <li class="chip">Gemini</li>
+      </ul>
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <button type="button" data-open-chat class="btn-primary">
+          {ui.showcase.chatCta}
+          <span aria-hidden="true">💬</span>
+        </button>
+        <a href={chatPostHref} class="btn-ghost">
+          {ui.showcase.readPost}
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </article>
+
+    <article class="border-line bg-bg-alt flex flex-col rounded-xl border p-6 md:p-8">
+      <div class="flex items-center gap-3">
+        <span
+          class="bg-accent/10 text-accent flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+          aria-hidden="true"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <circle cx="12" cy="12" r="6"></circle>
+            <circle cx="12" cy="12" r="2"></circle>
+            <path d="M12 12 19 5"></path>
+          </svg>
+        </span>
+        <h3 class="font-display text-ink text-lg font-bold md:text-xl">
+          {ui.showcase.radarTitle}
+        </h3>
+      </div>
+      <p class="text-ink-soft mt-4 flex-1 text-[15px] leading-relaxed">
+        {ui.showcase.radarDescription}
+      </p>
+      <ul class="mt-5 flex flex-wrap gap-2" role="list">
+        <li class="chip">GitHub Actions</li>
+        <li class="chip">LLM</li>
+        <li class="chip">Human in the loop</li>
+      </ul>
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <a href={radarHref} class="btn-primary">
+          {ui.showcase.radarCta}
+          <span aria-hidden="true">→</span>
+        </a>
+        <a href={radarPostHref} class="btn-ghost">
+          {ui.showcase.readPost}
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </article>
+  </div>
+</Section>
+
+<script>
+  // Il bottone "Provalo ora" apre il widget chat riusando il launcher
+  // esistente (che a sua volta carica la logica lazy alla prima apertura).
+  document.querySelectorAll('[data-open-chat]').forEach((button) =>
+    button.addEventListener('click', () => {
+      document.getElementById('chat-launcher')?.click();
+    }),
+  );
+</script>

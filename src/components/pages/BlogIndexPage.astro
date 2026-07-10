@@ -1,0 +1,83 @@
+---
+/**
+ * Indice del blog, condiviso tra le due lingue: mostra solo i post della
+ * lingua corrente (cartelle it/ ed en/ in src/content/blog, stesso slug
+ * tra le lingue così il toggle IT/EN porta al post corrispondente).
+ */
+import { getCollection } from 'astro:content';
+import Footer from '../Footer.astro';
+import Header from '../Header.astro';
+import { asLocale, useTranslations } from '../../i18n/ui';
+import Base from '../../layouts/Base.astro';
+
+const locale = asLocale(Astro.currentLocale);
+const ui = useTranslations(locale);
+const basePath = locale === 'en' ? '/en/blog' : '/blog';
+
+const posts = (
+  await getCollection('blog', ({ id, data }) => id.startsWith(`${locale}/`) && !data.draft)
+).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const dateFormat = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'it-IT', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+---
+
+<Base title={ui.blog.metaTitle} description={ui.blog.metaDescription}>
+  <a
+    href="#main"
+    class="bg-accent text-on-accent fixed top-4 left-4 z-[100] -translate-y-24 rounded-md px-4 py-2 text-sm font-medium transition-transform focus:translate-y-0"
+  >
+    {ui.a11y.skipToContent}
+  </a>
+  <Header />
+  <main id="main">
+    <section class="py-16 md:py-24" aria-labelledby="blog-title">
+      <div class="mx-auto max-w-3xl px-5 md:px-8">
+        <h1
+          id="blog-title"
+          class="font-display text-ink text-4xl font-bold tracking-tight md:text-5xl"
+        >
+          {ui.blog.title}<span class="text-accent">.</span>
+        </h1>
+        <p class="text-ink-soft mt-5 max-w-2xl text-[15px] leading-relaxed md:text-base">
+          {ui.blog.intro}
+        </p>
+
+        <div class="border-line mt-12 border-t">
+          {
+            posts.length === 0 ? (
+              <p class="text-ink-mute py-12 text-[15px]">{ui.blog.empty}</p>
+            ) : (
+              <div class="divide-line divide-y">
+                {posts.map((post) => (
+                  <article class="py-8">
+                    <p class="text-ink-mute text-[13px]">
+                      <time datetime={post.data.pubDate.toISOString().slice(0, 10)}>
+                        {dateFormat.format(post.data.pubDate)}
+                      </time>
+                    </p>
+                    <h2 class="font-display text-ink mt-2 text-xl font-bold md:text-2xl">
+                      <a
+                        href={`${basePath}/${post.id.slice(locale.length + 1)}`}
+                        class="hover:text-accent transition-colors"
+                      >
+                        {post.data.title}
+                      </a>
+                    </h2>
+                    <p class="text-ink-soft mt-3 text-[15px] leading-relaxed">
+                      {post.data.description}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            )
+          }
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
