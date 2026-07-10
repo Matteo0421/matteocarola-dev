@@ -30,7 +30,14 @@ const radar = defineCollection({
     summary: z.string(),
     tags: z.array(z.string()).min(1).max(5),
     sourceName: z.string(),
-    sourceUrl: z.string().url(),
+    // Solo http(s): `url()` da solo accetterebbe anche `javascript:` (valido
+    // per lo standard WHATWG) e la card lo renderizza come href cliccabile.
+    sourceUrl: z
+      .string()
+      .url()
+      .refine((u) => u.startsWith('https://') || u.startsWith('http://'), {
+        message: 'sourceUrl deve essere un URL http(s)',
+      }),
     pubDate: z.coerce.date(),
   }),
 });

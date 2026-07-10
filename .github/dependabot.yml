@@ -1,0 +1,18 @@
+version: 2
+updates:
+  # Dipendenze npm: tiene aggiornati Astro, l'adapter Vercel, ecc. e apre
+  # PR per gli advisory di sicurezza.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      dev-dependencies:
+        dependency-type: development
+
+  # GitHub Actions: propone i bump degli SHA pinnati nei workflow.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

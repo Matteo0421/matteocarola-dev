@@ -31,7 +31,24 @@ const sendButton = document.getElementById('chat-send') as HTMLButtonElement;
 const iconOpen = document.getElementById('chat-icon-open')!;
 const iconClose = document.getElementById('chat-icon-close')!;
 
-const strings: ChatStrings = JSON.parse(widget.dataset.strings ?? '{}');
+// Le stringhe arrivano server-side da ui.ts e sono sempre presenti; il
+// try/catch è solo difensivo (dataset assente/corrotto) per non mostrare
+// mai "undefined" in una bolla.
+function parseStrings(): ChatStrings {
+  const fallback: ChatStrings = {
+    thinking: '…',
+    errorGeneric: 'Errore. Riprova tra poco.',
+    errorRateLimited: 'Troppe richieste: aspetta un momento e riprova.',
+    errorQuota: 'Servizio non disponibile al momento. Riprova più tardi.',
+  };
+  try {
+    return { ...fallback, ...JSON.parse(widget.dataset.strings ?? '{}') };
+  } catch {
+    return fallback;
+  }
+}
+
+const strings: ChatStrings = parseStrings();
 const history: HistoryTurn[] = [];
 let pending = false;
 
