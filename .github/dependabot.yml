@@ -1,17 +1,22 @@
 version: 2
 updates:
-  # Dipendenze npm: tiene aggiornati Astro, l'adapter Vercel, ecc. e apre
-  # PR per gli advisory di sicurezza.
+  # Dipendenze npm: patch e minor arrivano in automatico; i MAJOR sono
+  # esclusi di proposito (si fanno a mano, testati: vedi decisione Astro 5→7
+  # del 10/07/2026). Gli avvisi di SICUREZZA restano attivi a prescindere.
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
     groups:
       dev-dependencies:
         dependency-type: development
 
-  # GitHub Actions: propone i bump degli SHA pinnati nei workflow.
+  # GitHub Actions: propone i bump degli SHA pinnati nei workflow
+  # (anche major: sono a basso rischio e la CI li verifica).
   - package-ecosystem: github-actions
     directory: /
     schedule:
