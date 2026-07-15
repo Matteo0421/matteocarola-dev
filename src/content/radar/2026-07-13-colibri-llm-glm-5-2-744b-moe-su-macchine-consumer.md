@@ -6,3 +6,5 @@ sourceName: "GitHub Trending"
 sourceUrl: "https://github.com/JustVugg/colibri"
 pubDate: 2026-07-13
 ---
+
+Bello il concetto di gerarchia unificata VRAM→RAM→disco, ma a 0.1 token/s resta un esperimento: lo tengo d'occhio come pattern, non come tool.
