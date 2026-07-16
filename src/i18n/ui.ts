@@ -48,6 +48,11 @@ export interface Dictionary {
     empty: string;
     noteLabel: string;
     sourceLabel: string;
+    chartHint: string;
+    rings: { recent: string; month: string; quarter: string; older: string };
+    categories: { ai: string; aws: string; dev: string; other: string };
+    archiveTitle: string;
+    cardsLabel: string;
   };
   a11y: {
     skipToContent: string;
@@ -142,6 +147,17 @@ export const it: Dictionary = {
     empty: 'Le prime segnalazioni sono in arrivo: il radar è appena stato acceso.',
     noteLabel: 'La mia nota',
     sourceLabel: 'Fonte',
+    chartHint:
+      'Ogni punto è una segnalazione: più è vicino al centro, più è recente. Clicca un punto per andare alla card.',
+    rings: {
+      recent: 'ultimi 10 giorni',
+      month: 'ultimo mese',
+      quarter: 'ultimo trimestre',
+      older: 'oltre',
+    },
+    categories: { ai: 'AI & LLM', aws: 'AWS & Cloud', dev: 'Dev & Tools', other: 'Altro' },
+    archiveTitle: 'Archivio',
+    cardsLabel: 'card',
   },
   a11y: {
     skipToContent: 'Salta al contenuto',
@@ -247,6 +263,17 @@ export const en: Dictionary = {
     empty: 'The first picks are on their way: the radar has just been switched on.',
     noteLabel: 'My note',
     sourceLabel: 'Source',
+    chartHint:
+      'Each dot is a pick: the closer to the center, the more recent. Click a dot to jump to its card.',
+    rings: {
+      recent: 'last 10 days',
+      month: 'last month',
+      quarter: 'last quarter',
+      older: 'older',
+    },
+    categories: { ai: 'AI & LLM', aws: 'AWS & Cloud', dev: 'Dev & Tools', other: 'Other' },
+    archiveTitle: 'Archive',
+    cardsLabel: 'cards',
   },
   a11y: {
     skipToContent: 'Skip to content',

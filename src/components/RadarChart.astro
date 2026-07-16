@@ -1,0 +1,314 @@
+---
+/**
+ * Il Tech Radar reso... un radar: SVG statico generato a build time.
+ * Ogni card è un blip: l'anello è l'età (centro = recente), lo spicchio è
+ * la categoria (derivata dai tag), il click porta alla card (anchor).
+ * Zero JavaScript: i blip sono <a>, il tooltip è il <title> nativo,
+ * lo sweep è CSS (disattivato con prefers-reduced-motion).
+ */
+import { asLocale, useTranslations } from '../i18n/ui';
+
+type Category = 'ai' | 'aws' | 'dev' | 'other';
+
+interface Blip {
+  anchorId: string;
+  title: string;
+  tags: string[];
+  pubDate: Date;
+}
+
+interface Props {
+  blips: Blip[];
+}
+
+const locale = asLocale(Astro.currentLocale);
+const ui = useTranslations(locale);
+const { blips } = Astro.props;
+
+/* Categoria dal primo gruppo di keyword che matcha (priorità ai > aws > dev). */
+const KEYWORDS: Record<Exclude<Category, 'other'>, string[]> = {
+  ai: [
+    'ai',
+    'llm',
+    'rag',
+    'genai',
+    'ml',
+    'embedding',
+    'embeddings',
+    'vector',
+    'vectors',
+    'bedrock',
+    'gemini',
+    'agent',
+    'agents',
+    'generative',
+    'intelligenza',
+  ],
+  aws: [
+    'aws',
+    's3',
+    'ec2',
+    'lambda',
+    'serverless',
+    'cloud',
+    'database',
+    'db',
+    'rds',
+    'dynamodb',
+    'emr',
+    'eks',
+    'ecs',
+    'storage',
+    'iam',
+  ],
+  dev: [
+    'github',
+    'git',
+    'devops',
+    'docker',
+    'kubernetes',
+    'k8s',
+    'tool',
+    'tools',
+    'cli',
+    'open',
+    'source',
+    'typescript',
+    'javascript',
+    'python',
+    'rust',
+    'react',
+  ],
+};
+
+function categorize(tags: string[]): Category {
+  const tokens = tags.flatMap((tag) => tag.toLowerCase().split(/[^a-z0-9]+/)).filter(Boolean);
+  for (const category of ['ai', 'aws', 'dev'] as const) {
+    if (tokens.some((token) => KEYWORDS[category].includes(token))) return category;
+  }
+  return 'other';
+}
+
+/* Geometria: 4 anelli per età, 4 quadranti per categoria. */
+const SIZE = 440;
+const CX = SIZE / 2;
+const CY = SIZE / 2;
+const RINGS = [56, 100, 144, 188];
+const BANDS: [number, number][] = [
+  [18, 56],
+  [56, 100],
+  [100, 144],
+  [144, 188],
+];
+const BLIP_R = [6, 6, 5.5, 5];
+const now = Date.now();
+
+function ringOf(date: Date): number {
+  const days = (now - date.valueOf()) / 86_400_000;
+  if (days <= 10) return 0;
+  if (days <= 35) return 1;
+  if (days <= 100) return 2;
+  return 3;
+}
+
+/* Quadranti (gradi, senso orario, 0° = est): ai in alto a destra, poi aws,
+ * dev, other. */
+const SECTORS: Record<Category, [number, number]> = {
+  ai: [-90, 0],
+  aws: [0, 90],
+  dev: [90, 180],
+  other: [180, 270],
+};
+
+interface PlacedBlip extends Blip {
+  category: Category;
+  x: number;
+  y: number;
+  r: number;
+}
+
+/* Distribuzione deterministica: i blip della stessa cella (categoria+anello)
+ * si spartiscono l'arco a distanze regolari; il raggio alterna 3 corsie
+ * dentro la banda per evitare sovrapposizioni. */
+const cells = new Map<string, Blip[]>();
+for (const blip of [...blips].sort((a, b) => a.anchorId.localeCompare(b.anchorId))) {
+  const key = `${categorize(blip.tags)}|${ringOf(blip.pubDate)}`;
+  cells.set(key, [...(cells.get(key) ?? []), blip]);
+}
+
+const placed: PlacedBlip[] = [];
+for (const [key, group] of cells) {
+  const [category, ringRaw] = key.split('|') as [Category, string];
+  const ring = Number(ringRaw);
+  const [start, end] = SECTORS[category];
+  const pad = 14;
+  const span = end - start - pad * 2;
+  const [inner, outer] = BANDS[ring];
+  group.forEach((blip, i) => {
+    const angle = ((start + pad + (span * (i + 0.5)) / group.length) * Math.PI) / 180;
+    const lane = inner + 8 + (i % 3) * ((outer - inner - 16) / 2);
+    placed.push({
+      ...blip,
+      category,
+      x: CX + lane * Math.cos(angle),
+      y: CY + lane * Math.sin(angle),
+      r: BLIP_R[ring],
+    });
+  });
+}
+
+const categoriesPresent = (['ai', 'aws', 'dev', 'other'] as const).filter((c) =>
+  placed.some((b) => b.category === c),
+);
+
+const dateFormat = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'it-IT', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+});
+
+const ringLabels = [
+  ui.radar.rings.recent,
+  ui.radar.rings.month,
+  ui.radar.rings.quarter,
+  ui.radar.rings.older,
+];
+---
+
+<figure class="radar-viz mx-auto mt-10 max-w-[460px]">
+  <svg viewBox={`0 0 ${SIZE} ${SIZE}`} class="w-full" aria-label={ui.radar.chartHint}>
+    {/* Sweep animato (solo decorativo, sparisce con reduced-motion). */}
+    <path
+      class="radar-sweep"
+      d={`M ${CX} ${CY} L ${CX} ${CY - RINGS[3]} A ${RINGS[3]} ${RINGS[3]} 0 0 1 ${CX + RINGS[3] * Math.sin(Math.PI / 6)} ${CY - RINGS[3] * Math.cos(Math.PI / 6)} Z`}
+      aria-hidden="true"></path>
+
+    {RINGS.map((r) => <circle cx={CX} cy={CY} r={r} class="radar-ring" />)}
+    <line x1={CX - RINGS[3]} y1={CY} x2={CX + RINGS[3]} y2={CY} class="radar-axis"></line>
+    <line x1={CX} y1={CY - RINGS[3]} x2={CX} y2={CY + RINGS[3]} class="radar-axis"></line>
+    <circle cx={CX} cy={CY} r="3" class="radar-center"></circle>
+
+    {/* Etichette degli anelli lungo l'asse nord. */}
+    {
+      BANDS.map(([inner, outer], i) => (
+        <text x={CX + 7} y={CY - (inner + outer) / 2 + 4} class="radar-ring-label">
+          {ringLabels[i]}
+        </text>
+      ))
+    }
+
+    {
+      placed.map((blip) => (
+        <a href={`#${blip.anchorId}`} aria-label={blip.title}>
+          <circle
+            cx={blip.x}
+            cy={blip.y}
+            r={blip.r}
+            class={`radar-blip radar-blip-${blip.category}`}
+          >
+            <title>{`${blip.title} — ${dateFormat.format(blip.pubDate)}`}</title>
+          </circle>
+        </a>
+      ))
+    }
+  </svg>
+
+  <figcaption>
+    <ul class="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2" role="list">
+      {
+        categoriesPresent.map((category) => (
+          <li class="text-ink-soft flex items-center gap-2 text-[13px]">
+            <span class={`radar-dot radar-blip-${category}`} aria-hidden="true" />
+            {ui.radar.categories[category]}
+          </li>
+        ))
+      }
+    </ul>
+    <p class="text-ink-mute mt-3 text-center text-[13px] leading-relaxed">
+      {ui.radar.chartHint}
+    </p>
+  </figcaption>
+</figure>
+
+<style>
+  .radar-viz {
+    --blip-ai: #1d4ed8;
+    --blip-aws: #0f766e;
+    --blip-dev: #9333ea;
+    --blip-other: #67675f;
+  }
+  :global([data-theme='dark']) .radar-viz {
+    --blip-ai: #60a5fa;
+    --blip-aws: #2dd4bf;
+    --blip-dev: #c084fc;
+    --blip-other: #8b8b83;
+  }
+  .radar-ring {
+    fill: none;
+    stroke: var(--line);
+  }
+  .radar-axis {
+    stroke: var(--line);
+    stroke-width: 0.5;
+  }
+  .radar-center {
+    fill: var(--ink-mute);
+  }
+  .radar-ring-label {
+    fill: var(--ink-mute);
+    font-size: 10px;
+  }
+  .radar-blip {
+    fill: var(--blip-other);
+    transition: r 0.15s ease;
+  }
+  .radar-blip-ai {
+    fill: var(--blip-ai);
+  }
+  .radar-blip-aws {
+    fill: var(--blip-aws);
+  }
+  .radar-blip-dev {
+    fill: var(--blip-dev);
+  }
+  .radar-blip-other {
+    fill: var(--blip-other);
+  }
+  a:hover .radar-blip,
+  a:focus-visible .radar-blip {
+    stroke: var(--accent);
+    stroke-width: 3;
+  }
+  .radar-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background: var(--blip-other);
+  }
+  span.radar-blip-ai {
+    background: var(--blip-ai);
+  }
+  span.radar-blip-aws {
+    background: var(--blip-aws);
+  }
+  span.radar-blip-dev {
+    background: var(--blip-dev);
+  }
+  .radar-sweep {
+    fill: var(--accent);
+    opacity: 0.07;
+    transform-origin: center;
+    animation: radar-sweep 14s linear infinite;
+  }
+  @keyframes radar-sweep {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .radar-sweep {
+      display: none;
+    }
+  }
+</style>
