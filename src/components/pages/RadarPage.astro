@@ -78,6 +78,8 @@ for (const entry of archived) {
 
         {entries.length > 0 && <RadarChart {blips} />}
 
+        {/* h2 solo per screen reader: mantiene la gerarchia h1→h2→h3 delle card. */}
+        <h2 class="sr-only">{ui.radar.latestTitle}</h2>
         <div class="border-line mt-12 border-t">
           {
             entries.length === 0 ? (

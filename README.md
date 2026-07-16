@@ -184,7 +184,7 @@ Scelte deliberate:
 - **JS solo per la chat**: il markup del widget è prerendered; la logica (~2 KB) si carica con un import dinamico alla prima apertura. Pannello accessibile: `role="dialog"`, `aria-live` sui messaggi, Esc per chiudere, focus gestito.
 - **Costo zero**: Gemini free tier (embeddings + generazione), Vercel Hobby; la quota gratuita fa da cap globale naturale oltre al rate limit.
 
-Per lavorarci in locale: `GEMINI_API_KEY` in `.env` (vedi `.env.example`), poi `npm run rag:build` dopo ogni modifica ai contenuti. In produzione la stessa chiave va negli Environment Variables di Vercel.
+Per lavorarci in locale: `GEMINI_API_KEY` in `.env` (vedi `.env.example`), poi `npm run rag:build` dopo ogni modifica ai contenuti in `src/data/` (per le card del radar non serve: la pipeline rigenera l'indice dentro la stessa PR). In produzione la stessa chiave va negli Environment Variables di Vercel.
 
 ## SEO
 

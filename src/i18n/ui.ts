@@ -51,6 +51,7 @@ export interface Dictionary {
     chartHint: string;
     rings: { recent: string; month: string; quarter: string; older: string };
     categories: { ai: string; aws: string; dev: string; other: string };
+    latestTitle: string;
     archiveTitle: string;
     cardsLabel: string;
   };
@@ -156,6 +157,7 @@ export const it: Dictionary = {
       older: 'oltre',
     },
     categories: { ai: 'AI & LLM', aws: 'AWS & Cloud', dev: 'Dev & Tools', other: 'Altro' },
+    latestTitle: 'Ultime segnalazioni',
     archiveTitle: 'Archivio',
     cardsLabel: 'card',
   },
@@ -164,7 +166,7 @@ export const it: Dictionary = {
     toggleTheme: 'Cambia tema (chiaro/scuro)',
     openMenu: 'Apri il menu di navigazione',
     mainNav: 'Navigazione principale',
-    switchLanguage: 'Passa all’inglese',
+    switchLanguage: 'EN — passa alla versione inglese',
   },
   chat: {
     launcherLabel: 'Apri la chat "Chiedi a Matteo"',
@@ -272,6 +274,7 @@ export const en: Dictionary = {
       older: 'older',
     },
     categories: { ai: 'AI & LLM', aws: 'AWS & Cloud', dev: 'Dev & Tools', other: 'Other' },
+    latestTitle: 'Latest picks',
     archiveTitle: 'Archive',
     cardsLabel: 'cards',
   },
@@ -280,7 +283,7 @@ export const en: Dictionary = {
     toggleTheme: 'Toggle theme (light/dark)',
     openMenu: 'Open navigation menu',
     mainNav: 'Main navigation',
-    switchLanguage: 'Switch to Italian',
+    switchLanguage: 'IT — switch to the Italian version',
   },
   chat: {
     launcherLabel: 'Open the "Ask Matteo" chat',
