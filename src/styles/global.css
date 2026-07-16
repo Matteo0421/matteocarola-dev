@@ -244,6 +244,18 @@ body {
   );
 }
 
+/* Barra di progresso lettura dei post (sopra l'header, non interattiva). */
+.read-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  height: 3px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+
 /* Timeline esperienza: linea statica + linea accento che si disegna. */
 .tl-line,
 .tl-draw {
