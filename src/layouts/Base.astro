@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import ChatWidget from '../components/ChatWidget.astro';
 import Seo from '../components/Seo.astro';
 import { asLocale } from '../i18n/ui';
@@ -18,18 +19,27 @@ const lang = asLocale(Astro.currentLocale);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {/* Applica il tema prima del primo paint per evitare il flash. */}
+    {
+      /* Applica il tema prima del primo paint per evitare il flash; la classe
+        js abilita i reveal (senza JS il contenuto resta visibile). Il listener
+        astro:after-swap ripristina tema e classe dopo ogni view transition. */
+    }
     <script is:inline>
       (() => {
-        let theme = 'light';
-        try {
-          theme =
-            localStorage.getItem('theme') ??
-            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        } catch {
-          /* localStorage non disponibile: resta il tema chiaro */
-        }
-        document.documentElement.dataset.theme = theme;
+        const apply = () => {
+          let theme = 'light';
+          try {
+            theme =
+              localStorage.getItem('theme') ??
+              (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          } catch {
+            /* localStorage non disponibile: resta il tema chiaro */
+          }
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.classList.add('js');
+        };
+        apply();
+        document.addEventListener('astro:after-swap', apply);
       })();
     </script>
     <Seo {title} {description} />
@@ -41,9 +51,75 @@ const lang = asLocale(Astro.currentLocale);
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafaf8" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121211" />
     <meta name="generator" content={Astro.generator} />
+    {/* Navigazione client-side con view transitions tra le pagine. */}
+    <ClientRouter />
   </head>
   <body>
     <slot />
     <ChatWidget />
   </body>
 </html>
+
+<script>
+  /**
+   * Motion di base, condiviso da tutte le pagine (vedi global.css):
+   * - reveal on scroll degli elementi [data-reveal];
+   * - scroll-spy sulla nav (aria-current sulla voce della sezione in vista);
+   * - header con bordo/ombra solo dopo il primo scroll.
+   * init() è idempotente e viene rieseguita ad ogni astro:page-load,
+   * così funziona anche con le view transitions.
+   */
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let revealObserver: IntersectionObserver | undefined;
+  let spyObserver: IntersectionObserver | undefined;
+
+  function syncHeader() {
+    document.getElementById('site-header')?.classList.toggle('is-scrolled', window.scrollY > 8);
+  }
+
+  function init() {
+    syncHeader();
+    revealObserver?.disconnect();
+    spyObserver?.disconnect();
+
+    const revealed = document.querySelectorAll('[data-reveal]');
+    if (reducedMotion.matches) {
+      revealed.forEach((el) => el.classList.add('in'));
+    } else {
+      revealObserver = new IntersectionObserver(
+        (entries, observer) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.classList.add('in');
+            observer.unobserve(entry.target);
+          }
+        },
+        { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+      );
+      revealed.forEach((el) => revealObserver!.observe(el));
+    }
+
+    // Scroll-spy: solo i link della nav desktop che puntano a un'ancora
+    // presente in pagina (sulle pagine interne semplicemente non osserva nulla).
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('nav[data-spy] a[href*="#"]')];
+    const linkById = new Map(links.map((link) => [link.href.split('#')[1] ?? '', link]));
+    spyObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          links.forEach((link) => link.removeAttribute('aria-current'));
+          linkById.get(entry.target.id)?.setAttribute('aria-current', 'location');
+        }
+      },
+      { rootMargin: '-35% 0px -55% 0px' },
+    );
+    for (const id of linkById.keys()) {
+      const section = document.getElementById(id);
+      if (section) spyObserver.observe(section);
+    }
+  }
+
+  window.addEventListener('scroll', syncHeader, { passive: true });
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>

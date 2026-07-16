@@ -11,6 +11,14 @@ export interface Dictionary {
   meta: { title: string; description: string };
   nav: { href: string; label: string }[];
   hero: { kicker: string; lede: string; ctaEmail: string };
+  heroAsk: {
+    title: string;
+    subtitle: string;
+    placeholder: string;
+    cta: string;
+    suggestions: string[];
+  };
+  radarStrip: { kicker: string; copy: string; linkLabel: string; countLabel: string };
   sections: {
     about: string;
     skills: string;
@@ -93,13 +101,32 @@ export const it: Dictionary = {
     { href: '/#dietro-le-quinte', label: 'Dietro le quinte' },
     { href: '/#esperienza', label: 'Esperienza' },
     { href: '/#contatti', label: 'Contatti' },
-    { href: '/radar', label: 'Radar' },
+    // La voce porta all'anteprima del radar in home; da lì il titolo apre /radar.
+    { href: '/#radar', label: 'Tech Radar' },
     { href: '/blog', label: 'Blog' },
   ],
   hero: {
     kicker: 'Software Engineer — Cloud & AI Engineering · AWS',
     lede: 'Mi occupo di infrastrutture cloud e piattaforme di Generative AI su AWS: Infrastructure as Code, architetture serverless, CI/CD, integrazione di modelli LLM (RAG, prompt engineering) e conduzione operativa degli ambienti.',
     ctaEmail: 'Scrivimi',
+  },
+  heroAsk: {
+    title: 'Il mio assistente personale',
+    subtitle:
+      'Un chatbot RAG indicizzato su tutto quello che ho costruito — compreso sé stesso. Chiedigli dei miei progetti, dello stack che uso o del mio percorso.',
+    placeholder: 'Chiedi qualcosa su di me…',
+    cta: 'Chiedi',
+    suggestions: [
+      'Che esperienza hai con RAG in produzione?',
+      'Cosa hai costruito su AWS?',
+      'Com’è fatto questo sito?',
+    ],
+  },
+  radarStrip: {
+    kicker: 'Si aggiorna da solo',
+    copy: 'Un estratto vivo del Tech Radar: ogni punto è una segnalazione scelta da una pipeline GenAI e approvata a mano, più è vicino al centro più è recente. Il titolo porta alla pagina completa.',
+    linkLabel: 'Pagina completa',
+    countLabel: 'segnalazioni',
   },
   sections: {
     about: 'Chi sono',
@@ -210,13 +237,31 @@ export const en: Dictionary = {
     { href: '/en/#dietro-le-quinte', label: 'Behind the scenes' },
     { href: '/en/#esperienza', label: 'Experience' },
     { href: '/en/#contatti', label: 'Contact' },
-    { href: '/en/radar', label: 'Radar' },
+    { href: '/en/#radar', label: 'Tech Radar' },
     { href: '/en/blog', label: 'Blog' },
   ],
   hero: {
     kicker: 'Software Engineer — Cloud & AI Engineering · AWS',
     lede: 'I build cloud infrastructure and Generative AI platforms on AWS: Infrastructure as Code, serverless architectures, CI/CD, LLM integration (RAG, prompt engineering) and hands-on operation of production environments.',
     ctaEmail: 'Email me',
+  },
+  heroAsk: {
+    title: 'My personal assistant',
+    subtitle:
+      'A RAG chatbot indexed on everything I’ve built — including itself. Ask it about my projects, the stack I use or my path.',
+    placeholder: 'Ask me anything…',
+    cta: 'Ask',
+    suggestions: [
+      'What’s your experience with RAG in production?',
+      'What have you built on AWS?',
+      'How is this site built?',
+    ],
+  },
+  radarStrip: {
+    kicker: 'Updates on its own',
+    copy: 'A living excerpt of the Tech Radar: each dot is a pick chosen by a GenAI pipeline and approved by hand — the closer to the center, the more recent. The title takes you to the full page.',
+    linkLabel: 'Full page',
+    countLabel: 'picks',
   },
   sections: {
     about: 'About',

@@ -19,11 +19,15 @@ interface Blip {
 
 interface Props {
   blips: Blip[];
+  /** Prefisso degli anchor: '' sulla pagina radar, '/radar' altrove (es. home). */
+  hrefBase?: string;
+  /** Variante compatta per la home: niente etichette anelli né legenda. */
+  compact?: boolean;
 }
 
 const locale = asLocale(Astro.currentLocale);
 const ui = useTranslations(locale);
-const { blips } = Astro.props;
+const { blips, hrefBase = '', compact = false } = Astro.props;
 
 /* Categoria dal primo gruppo di keyword che matcha (priorità ai > aws > dev). */
 const KEYWORDS: Record<Exclude<Category, 'other'>, string[]> = {
@@ -180,7 +184,9 @@ const ringLabels = [
 ];
 ---
 
-<figure class="radar-viz mx-auto mt-10 max-w-[460px]">
+<figure
+  class:list={['radar-viz mx-auto', compact ? 'w-full max-w-[340px]' : 'mt-10 max-w-[460px]']}
+>
   <svg viewBox={`0 0 ${SIZE} ${SIZE}`} class="w-full" aria-label={ui.radar.chartHint}>
     {/* Sweep animato (solo decorativo, sparisce con reduced-motion). */}
     <path
@@ -193,18 +199,19 @@ const ringLabels = [
     <line x1={CX} y1={CY - RINGS[3]} x2={CX} y2={CY + RINGS[3]} class="radar-axis"></line>
     <circle cx={CX} cy={CY} r="3" class="radar-center"></circle>
 
-    {/* Etichette degli anelli lungo l'asse nord. */}
+    {/* Etichette degli anelli lungo l'asse nord (omesse nella variante compatta). */}
     {
-      BANDS.map(([inner, outer], i) => (
-        <text x={CX + 7} y={CY - (inner + outer) / 2 + 4} class="radar-ring-label">
-          {ringLabels[i]}
-        </text>
-      ))
+      !compact &&
+        BANDS.map(([inner, outer], i) => (
+          <text x={CX + 7} y={CY - (inner + outer) / 2 + 4} class="radar-ring-label">
+            {ringLabels[i]}
+          </text>
+        ))
     }
 
     {
       placed.map((blip) => (
-        <a href={`#${blip.anchorId}`} aria-label={blip.title}>
+        <a href={`${hrefBase}#${blip.anchorId}`} aria-label={blip.title}>
           <circle
             cx={blip.x}
             cy={blip.y}
@@ -218,7 +225,7 @@ const ringLabels = [
     }
   </svg>
 
-  <figcaption>
+  <figcaption class:list={[compact && 'hidden']}>
     <ul class="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2" role="list">
       {
         categoriesPresent.map((category) => (

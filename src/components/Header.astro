@@ -11,7 +11,7 @@ const otherHref = localizedPath(Astro.url.pathname, otherLocale);
 const otherLabel = otherLocale.toUpperCase();
 ---
 
-<header class="border-line bg-bg/85 sticky top-0 z-50 border-b backdrop-blur-sm">
+<header id="site-header" class="border-line bg-bg/85 sticky top-0 z-50 border-b backdrop-blur-sm">
   <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-5 md:px-8">
     <a href={homeHref} class="font-display text-lg font-bold tracking-tight">
       MC<span class="text-accent">·</span>
@@ -19,14 +19,14 @@ const otherLabel = otherLocale.toUpperCase();
 
     <div class="flex items-center gap-3">
       {/* Nav estesa da lg: con 8 voci sotto i 1024px andrebbe a capo. */}
-      <nav aria-label={ui.a11y.mainNav} class="hidden lg:block">
+      <nav aria-label={ui.a11y.mainNav} class="hidden lg:block" data-spy>
         <ul class="flex items-center gap-6">
           {
             ui.nav.map((item, i) => (
               <li>
                 <a
                   href={item.href}
-                  class="text-ink-soft hover:text-ink text-[13px] font-medium transition-colors"
+                  class="nav-link text-ink-soft hover:text-ink text-[13px] font-medium transition-colors"
                 >
                   <span class="font-display text-accent text-[11px] font-bold" aria-hidden="true">
                     0{i + 1}
@@ -96,8 +96,11 @@ const otherLabel = otherLocale.toUpperCase();
 </header>
 
 <script>
-  const details = document.getElementById('mobile-nav');
-  details
-    ?.querySelectorAll('a')
-    .forEach((link) => link.addEventListener('click', () => details.removeAttribute('open')));
+  // Delegato sul document (non sui link): sopravvive alle view transitions.
+  document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element)) return;
+    if (event.target.closest('#mobile-nav a')) {
+      document.getElementById('mobile-nav')?.removeAttribute('open');
+    }
+  });
 </script>

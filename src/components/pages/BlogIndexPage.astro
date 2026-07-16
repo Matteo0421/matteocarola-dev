@@ -34,15 +34,20 @@ const dateFormat = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'it-IT', 
   </a>
   <Header />
   <main id="main">
-    <section class="py-16 md:py-24" aria-labelledby="blog-title">
-      <div class="mx-auto max-w-3xl px-5 md:px-8">
+    <section class="relative overflow-hidden py-16 md:py-24" aria-labelledby="blog-title">
+      <div class="hero-dots absolute inset-x-0 top-0 h-[320px]" aria-hidden="true"></div>
+      <div class="relative mx-auto max-w-3xl px-5 md:px-8">
         <h1
           id="blog-title"
-          class="font-display text-ink text-4xl font-bold tracking-tight md:text-5xl"
+          class="font-display text-ink hero-step text-4xl font-bold tracking-tight md:text-5xl"
+          style="--step-delay:.05s"
         >
           {ui.blog.title}<span class="text-accent">.</span>
         </h1>
-        <p class="text-ink-soft mt-5 max-w-2xl text-[15px] leading-relaxed md:text-base">
+        <p
+          class="text-ink-soft hero-step mt-5 max-w-2xl text-[15px] leading-relaxed md:text-base"
+          style="--step-delay:.18s"
+        >
           {ui.blog.intro}
         </p>
 
@@ -52,14 +57,14 @@ const dateFormat = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'it-IT', 
               <p class="text-ink-mute py-12 text-[15px]">{ui.blog.empty}</p>
             ) : (
               <div class="divide-line divide-y">
-                {posts.map((post) => (
-                  <article class="py-8">
+                {posts.map((post, i) => (
+                  <article class="group py-8" data-reveal style={`--reveal-delay:${i * 0.05}s`}>
                     <p class="text-ink-mute text-[13px]">
                       <time datetime={post.data.pubDate.toISOString().slice(0, 10)}>
                         {dateFormat.format(post.data.pubDate)}
                       </time>
                     </p>
-                    <h2 class="font-display text-ink mt-2 text-xl font-bold md:text-2xl">
+                    <h2 class="font-display text-ink mt-2 text-xl font-bold motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:translate-x-1.5 md:text-2xl">
                       <a
                         href={`${basePath}/${post.id.slice(locale.length + 1)}`}
                         class="hover:text-accent transition-colors"

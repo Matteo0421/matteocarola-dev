@@ -6,39 +6,57 @@ const profile = getProfile(Astro.currentLocale);
 const ui = useTranslations(Astro.currentLocale);
 ---
 
-<section id="top" class="mx-auto max-w-5xl px-5 pt-16 pb-16 md:px-8 md:pt-28 md:pb-24">
-  <p class="text-accent text-xs font-semibold tracking-[0.18em] uppercase md:text-sm">
-    {ui.hero.kicker}
-  </p>
-  <h1
-    class="font-display text-ink mt-4 text-5xl leading-[1.02] font-bold tracking-tight md:text-7xl"
+<section id="top" class="relative overflow-hidden">
+  {/* Ornamenti: griglia di punti, bagliore dell'accento, mini-radar. */}
+  <div class="hero-dots absolute inset-0" aria-hidden="true"></div>
+  <div
+    class="hero-glow pointer-events-none absolute -top-52 -left-36 h-[38rem] w-[38rem] rounded-full"
+    aria-hidden="true"
   >
-    {profile.name}
-  </h1>
-  <div class="bg-accent mt-6 h-[3px] w-14" aria-hidden="true"></div>
-  <p class="text-ink-soft mt-6 max-w-2xl text-base leading-relaxed md:text-lg">
-    {ui.hero.lede}
-  </p>
-  <p class="text-ink-mute mt-4 flex items-center gap-1.5 text-sm">
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      aria-hidden="true"
+  </div>
+  <svg
+    class="pointer-events-none absolute top-8 -right-16 hidden opacity-50 md:block"
+    width="420"
+    height="420"
+    viewBox="0 0 420 420"
+    aria-hidden="true"
+  >
+    <circle cx="210" cy="210" r="70" fill="none" stroke="var(--line)"></circle>
+    <circle cx="210" cy="210" r="130" fill="none" stroke="var(--line)"></circle>
+    <circle cx="210" cy="210" r="190" fill="none" stroke="var(--line)"></circle>
+    <line x1="210" y1="20" x2="210" y2="400" stroke="var(--line)"></line>
+    <line x1="20" y1="210" x2="400" y2="210" stroke="var(--line)"></line>
+    <circle cx="258" cy="152" r="5" fill="var(--accent)"></circle>
+    <circle cx="300" cy="260" r="4.5" fill="var(--accent)"></circle>
+    <circle cx="150" cy="140" r="5" fill="#d97706"></circle>
+    <circle cx="165" cy="290" r="4" fill="var(--accent)"></circle>
+  </svg>
+
+  <div class="relative mx-auto max-w-5xl px-5 pt-16 pb-16 md:px-8 md:pt-28 md:pb-24">
+    <p
+      class="text-accent hero-step text-xs font-semibold tracking-[0.18em] uppercase md:text-sm"
+      style="--step-delay:.05s"
     >
-      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
-      <circle cx="12" cy="10" r="3"></circle>
-    </svg>
-    {profile.location}
-  </p>
-  <div class="mt-9 flex flex-wrap items-center gap-3">
-    <a href={`mailto:${profile.email}`} class="btn-primary">
-      {ui.hero.ctaEmail}
+      {ui.hero.kicker}
+    </p>
+    <h1
+      class="font-display text-ink mt-4 text-5xl leading-[1.02] font-bold tracking-tight md:text-7xl"
+      data-decode={profile.name}
+      aria-label={profile.name}
+    >
+      {profile.name}
+    </h1>
+    <div class="bg-accent hero-line mt-6 h-[3px] w-14" aria-hidden="true"></div>
+    <p
+      class="text-ink-soft hero-step mt-6 max-w-2xl text-base leading-relaxed md:text-lg"
+      style="--step-delay:1s"
+    >
+      {ui.hero.lede}
+    </p>
+    <p
+      class="text-ink-mute hero-step mt-4 flex items-center gap-1.5 text-sm"
+      style="--step-delay:1.12s"
+    >
       <svg
         width="15"
         height="15"
@@ -50,17 +68,169 @@ const ui = useTranslations(Astro.currentLocale);
         stroke-linejoin="round"
         aria-hidden="true"
       >
-        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-        <path d="m2 7 10 6 10-6"></path>
+        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+        <circle cx="12" cy="10" r="3"></circle>
       </svg>
-    </a>
-    <a href={profile.github} target="_blank" rel="noopener noreferrer" class="btn-ghost">
-      GitHub
-      <span aria-hidden="true">↗</span>
-    </a>
-    <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" class="btn-ghost">
-      LinkedIn
-      <span aria-hidden="true">↗</span>
-    </a>
+      {profile.location}
+    </p>
+    <div class="hero-step mt-9 flex flex-wrap items-center gap-3" style="--step-delay:1.22s">
+      <a href={`mailto:${profile.email}`} class="btn-primary" data-magnetic>
+        {ui.hero.ctaEmail}
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+          <path d="m2 7 10 6 10-6"></path>
+        </svg>
+      </a>
+      <a href={profile.github} target="_blank" rel="noopener noreferrer" class="btn-ghost">
+        GitHub
+        <span class="arr" aria-hidden="true">↗</span>
+      </a>
+      <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" class="btn-ghost">
+        LinkedIn
+        <span class="arr" aria-hidden="true">↗</span>
+      </a>
+    </div>
+
+    {/* L'assistente RAG in primo piano: domanda diretta o chip suggerite. */}
+    <div class="hero-step mt-10 max-w-xl" style="--step-delay:1.38s">
+      <p class="font-display text-ink flex items-center gap-2.5 text-base font-bold">
+        <span
+          class="bg-accent/10 text-accent inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md"
+          aria-hidden="true"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </span>
+        {ui.heroAsk.title}
+      </p>
+      <p class="text-ink-mute mt-1.5 text-[13.5px] leading-relaxed">{ui.heroAsk.subtitle}</p>
+      <form
+        id="hero-ask-form"
+        class="border-line bg-bg-alt focus-within:border-accent mt-4 flex gap-2 rounded-lg border p-1.5 transition-colors"
+        aria-label={ui.heroAsk.title}
+      >
+        <label class="sr-only" for="hero-ask-input">{ui.heroAsk.placeholder}</label>
+        <input
+          id="hero-ask-input"
+          type="text"
+          maxlength="500"
+          autocomplete="off"
+          placeholder={ui.heroAsk.placeholder}
+          class="text-ink placeholder:text-ink-mute min-w-0 flex-1 bg-transparent px-2.5 py-1.5 text-sm outline-none"
+        />
+        <button type="submit" class="btn-primary px-4 py-1.5 text-sm">{ui.heroAsk.cta}</button>
+      </form>
+      <div class="mt-2.5 flex flex-wrap gap-2">
+        {
+          ui.heroAsk.suggestions.map((question) => (
+            <button
+              type="button"
+              class="chip hover:border-accent hover:text-ink cursor-pointer transition-colors"
+              data-ask
+            >
+              {question}
+            </button>
+          ))
+        }
+      </div>
+    </div>
   </div>
 </section>
+
+<script>
+  /**
+   * Effetti della hero: decode del nome, bottone magnetico, assistente.
+   * init() è idempotente (guard sui dataset) e gira ad ogni astro:page-load.
+   */
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const GLYPHS = '!<>-_\\/[]{}=+*^?#·';
+
+  function decode() {
+    const el = document.querySelector<HTMLElement>('[data-decode]');
+    if (!el || el.dataset.decoding || reducedMotion.matches) return;
+    el.dataset.decoding = 'true';
+    const finalText = el.dataset.decode ?? el.textContent ?? '';
+    let progress = 0;
+    const timer = setInterval(() => {
+      progress += 0.55;
+      el.textContent = [...finalText]
+        .map((char, i) =>
+          char === ' ' || i < progress ? char : GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
+        )
+        .join('');
+      if (progress >= finalText.length) {
+        clearInterval(timer);
+        el.textContent = finalText;
+      }
+    }, 42);
+  }
+
+  function bindMagnetic() {
+    const el = document.querySelector<HTMLElement>('[data-magnetic]');
+    if (!el || el.dataset.bound) return;
+    if (reducedMotion.matches || !window.matchMedia('(hover: hover)').matches) return;
+    el.dataset.bound = 'true';
+    el.addEventListener('mousemove', (event) => {
+      const rect = el.getBoundingClientRect();
+      const dx = (event.clientX - rect.left - rect.width / 2) / rect.width;
+      const dy = (event.clientY - rect.top - rect.height / 2) / rect.height;
+      el.style.transform = `translate(${dx * 8}px, ${dy * 6}px)`;
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = '';
+    });
+  }
+
+  async function ask(question: string) {
+    const { openWithQuestion } = await import('../scripts/chat-panel');
+    openWithQuestion(question);
+  }
+
+  function bindAsk() {
+    const form = document.getElementById('hero-ask-form') as HTMLFormElement | null;
+    if (!form || form.dataset.bound) return;
+    form.dataset.bound = 'true';
+    const input = document.getElementById('hero-ask-input') as HTMLInputElement;
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const question = input.value.trim();
+      if (!question) return;
+      input.value = '';
+      void ask(question);
+    });
+    form.parentElement
+      ?.querySelectorAll<HTMLButtonElement>('[data-ask]')
+      .forEach((button) =>
+        button.addEventListener('click', () => void ask(button.textContent ?? '')),
+      );
+  }
+
+  function init() {
+    decode();
+    bindMagnetic();
+    bindAsk();
+  }
+
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>

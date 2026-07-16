@@ -61,22 +61,42 @@ for (const entry of archived) {
   </a>
   <Header />
   <main id="main">
-    <section class="py-16 md:py-24" aria-labelledby="radar-title">
-      <div class="mx-auto max-w-5xl px-5 md:px-8">
+    <section class="relative overflow-hidden py-16 md:py-24" aria-labelledby="radar-title">
+      <div class="hero-dots absolute inset-x-0 top-0 h-[420px]" aria-hidden="true"></div>
+      <div class="relative mx-auto max-w-5xl px-5 md:px-8">
+        <p
+          class="text-accent hero-step text-xs font-semibold tracking-[0.18em] uppercase md:text-sm"
+          style="--step-delay:.05s"
+        >
+          {ui.radarStrip.kicker}
+        </p>
         <h1
           id="radar-title"
-          class="font-display text-ink text-4xl font-bold tracking-tight md:text-5xl"
+          class="font-display text-ink hero-step mt-4 text-4xl font-bold tracking-tight md:text-5xl"
+          style="--step-delay:.15s"
         >
           {ui.radar.title}<span class="text-accent">.</span>
         </h1>
-        <p class="text-ink-soft mt-5 max-w-3xl text-[15px] leading-relaxed md:text-base">
+        <p
+          class="text-ink-soft hero-step mt-5 max-w-3xl text-[15px] leading-relaxed md:text-base"
+          style="--step-delay:.3s"
+        >
           {ui.radar.intro}
         </p>
-        <p class="text-ink-mute mt-3 max-w-3xl text-[13px] leading-relaxed">
+        <p
+          class="text-ink-mute hero-step mt-3 max-w-3xl text-[13px] leading-relaxed"
+          style="--step-delay:.4s"
+        >
           {ui.radar.howItWorks}
         </p>
 
-        {entries.length > 0 && <RadarChart {blips} />}
+        {
+          entries.length > 0 && (
+            <div data-reveal>
+              <RadarChart {blips} />
+            </div>
+          )
+        }
 
         {/* h2 solo per screen reader: mantiene la gerarchia h1→h2→h3 delle card. */}
         <h2 class="sr-only">{ui.radar.latestTitle}</h2>
@@ -86,8 +106,10 @@ for (const entry of archived) {
               <p class="text-ink-mute py-12 text-[15px]">{ui.radar.empty}</p>
             ) : (
               <div class="divide-line divide-y">
-                {recent.map((entry) => (
-                  <RadarCard {entry} anchorId={anchorIdOf(entry.id)} />
+                {recent.map((entry, i) => (
+                  <div data-reveal style={`--reveal-delay:${Math.min(i, 4) * 0.05}s`}>
+                    <RadarCard {entry} anchorId={anchorIdOf(entry.id)} />
+                  </div>
                 ))}
               </div>
             )
@@ -96,7 +118,7 @@ for (const entry of archived) {
 
         {
           months.length > 0 && (
-            <div class="mt-4">
+            <div class="mt-4" data-reveal>
               <h2 class="font-display text-ink text-lg font-bold md:text-xl">
                 {ui.radar.archiveTitle}
               </h2>
@@ -134,7 +156,8 @@ for (const entry of archived) {
 
 <script>
   // Un blip può puntare a una card dentro un <details> chiuso: aprilo prima
-  // di scrollare. Unico JS della pagina, pochi byte.
+  // di scrollare. Unico JS della pagina, pochi byte. Riagganciato ad ogni
+  // astro:page-load perché con le view transitions il DOM viene ricreato.
   function openTarget() {
     const id = decodeURIComponent(location.hash.slice(1));
     if (!id) return;
@@ -146,5 +169,6 @@ for (const entry of archived) {
     }
   }
   openTarget();
+  document.addEventListener('astro:page-load', openTarget);
   window.addEventListener('hashchange', openTarget);
 </script>

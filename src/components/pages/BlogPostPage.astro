@@ -35,10 +35,13 @@ const dateFormat = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'it-IT', 
     {ui.a11y.skipToContent}
   </a>
   <Header />
+  {/* Barra di progresso lettura: si riempie con lo scroll del post. */}
+  <div id="read-progress" class="read-progress" aria-hidden="true"></div>
   <main id="main">
-    <article class="py-16 md:py-24">
-      <div class="mx-auto max-w-3xl px-5 md:px-8">
-        <p class="text-ink-mute text-[13px]">
+    <article class="relative overflow-hidden py-16 md:py-24">
+      <div class="hero-dots absolute inset-x-0 top-0 h-[300px]" aria-hidden="true"></div>
+      <div class="relative mx-auto max-w-3xl px-5 md:px-8">
+        <p class="text-ink-mute hero-step text-[13px]" style="--step-delay:.05s">
           <a href={basePath} class="text-accent font-medium hover:underline"
             >← {ui.blog.backToBlog}</a
           >
@@ -48,12 +51,13 @@ const dateFormat = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'it-IT', 
           </time>
         </p>
         <h1
-          class="font-display text-ink mt-4 text-3xl leading-tight font-bold tracking-tight md:text-5xl"
+          class="font-display text-ink hero-step mt-4 text-3xl leading-tight font-bold tracking-tight md:text-5xl"
+          style="--step-delay:.12s"
         >
           {post.data.title}
         </h1>
-        <div class="bg-accent mt-6 h-[3px] w-14" aria-hidden="true"></div>
-        <div class="post mt-8">
+        <div class="bg-accent hero-line mt-6 h-[3px] w-14" aria-hidden="true"></div>
+        <div class="post hero-step mt-8" style="--step-delay:.3s">
           <Content />
         </div>
       </div>
@@ -61,3 +65,17 @@ const dateFormat = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'it-IT', 
   </main>
   <Footer />
 </Base>
+
+<script>
+  // Barra di progresso lettura: l'elemento esiste solo sui post; il listener
+  // (a livello di modulo, sopravvive alle view transitions) è un no-op altrove.
+  function syncProgress() {
+    const bar = document.getElementById('read-progress');
+    if (!bar) return;
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.transform = `scaleX(${max > 0 ? Math.min(window.scrollY / max, 1) : 0})`;
+  }
+  window.addEventListener('scroll', syncProgress, { passive: true });
+  syncProgress();
+  document.addEventListener('astro:page-load', syncProgress);
+</script>

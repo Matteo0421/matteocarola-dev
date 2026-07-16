@@ -19,7 +19,10 @@ const radarPostHref = localizedPath('/blog/tech-radar', locale);
     {ui.showcase.intro}
   </p>
   <div class="mt-10 grid gap-6 md:grid-cols-2">
-    <article class="border-line bg-bg-alt flex flex-col rounded-xl border p-6 md:p-8">
+    <article
+      class="border-line bg-bg-alt hover:border-ink-mute flex flex-col rounded-xl border p-6 transition-[border-color,box-shadow] hover:shadow-lg motion-safe:transition-[border-color,box-shadow,transform] motion-safe:hover:-translate-y-1 md:p-8"
+      data-reveal
+    >
       <div class="flex items-center gap-3">
         <span
           class="bg-accent/10 text-accent flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
@@ -58,12 +61,16 @@ const radarPostHref = localizedPath('/blog/tech-radar', locale);
         </button>
         <a href={chatPostHref} class="btn-ghost">
           {ui.showcase.readPost}
-          <span aria-hidden="true">→</span>
+          <span class="arr" aria-hidden="true">→</span>
         </a>
       </div>
     </article>
 
-    <article class="border-line bg-bg-alt flex flex-col rounded-xl border p-6 md:p-8">
+    <article
+      class="border-line bg-bg-alt hover:border-ink-mute flex flex-col rounded-xl border p-6 transition-[border-color,box-shadow] hover:shadow-lg motion-safe:transition-[border-color,box-shadow,transform] motion-safe:hover:-translate-y-1 md:p-8"
+      data-reveal
+      style="--reveal-delay:.08s"
+    >
       <div class="flex items-center gap-3">
         <span
           class="bg-accent/10 text-accent flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
@@ -100,11 +107,11 @@ const radarPostHref = localizedPath('/blog/tech-radar', locale);
       <div class="mt-6 flex flex-wrap items-center gap-3">
         <a href={radarHref} class="btn-primary">
           {ui.showcase.radarCta}
-          <span aria-hidden="true">→</span>
+          <span class="arr" aria-hidden="true">→</span>
         </a>
         <a href={radarPostHref} class="btn-ghost">
           {ui.showcase.readPost}
-          <span aria-hidden="true">→</span>
+          <span class="arr" aria-hidden="true">→</span>
         </a>
       </div>
     </article>
@@ -112,11 +119,11 @@ const radarPostHref = localizedPath('/blog/tech-radar', locale);
 </Section>
 
 <script>
-  // Il bottone "Provalo ora" apre il widget chat riusando il launcher
-  // esistente (che a sua volta carica la logica lazy alla prima apertura).
-  document.querySelectorAll('[data-open-chat]').forEach((button) =>
-    button.addEventListener('click', () => {
-      document.getElementById('chat-launcher')?.click();
-    }),
-  );
+  // Il bottone "Provalo ora" apre il widget chat. Delegato sul document,
+  // così sopravvive alle view transitions; la logica arriva lazy al click.
+  document.addEventListener('click', async (event) => {
+    if (!(event.target instanceof Element) || !event.target.closest('[data-open-chat]')) return;
+    const { openChat } = await import('../scripts/chat-panel');
+    openChat();
+  });
 </script>

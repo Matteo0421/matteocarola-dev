@@ -5,13 +5,67 @@ import Section from './Section.astro';
 
 const skillGroups = getSkillGroups(Astro.currentLocale);
 const ui = useTranslations(Astro.currentLocale);
+
+/* Nastro decorativo dei tool ricorrenti (nomi propri, uguali nelle due
+ * lingue): puramente visivo e aria-hidden, la lista vera è la griglia sotto.
+ * Ogni riga è duplicata per rendere continuo il loop del marquee. */
+const TICKER_TOP = [
+  'AWS Lambda',
+  'Step Functions',
+  'API Gateway',
+  'S3',
+  'DynamoDB',
+  'CloudFront',
+  'Cognito',
+  'OpenSearch',
+  'CloudFormation',
+  'CI/CD OIDC',
+  'EC2 GPU',
+  'CloudWatch',
+];
+const TICKER_BOTTOM = [
+  'RAG',
+  'Semantic search',
+  'Prompt engineering',
+  'Mistral',
+  'Ollama',
+  'AWS Bedrock',
+  'MLflow',
+  'JupyterHub',
+  'Kubernetes k3s',
+  'TypeScript',
+  'React',
+  'Python',
+  'FastAPI',
+];
 ---
 
 <Section id="competenze" number="02" title={ui.sections.skills}>
-  <div class="grid gap-x-12 gap-y-10 sm:grid-cols-2">
+  <div data-reveal>
+    <div class="marquee border-line overflow-hidden border-y py-3" aria-hidden="true">
+      <div class="marquee-row flex w-max gap-2">
+        {
+          [...TICKER_TOP, ...TICKER_TOP].map((tool) => (
+            <span class="chip whitespace-nowrap">{tool}</span>
+          ))
+        }
+      </div>
+    </div>
+    <div class="marquee border-line -mt-px overflow-hidden border-b py-3" aria-hidden="true">
+      <div class="marquee-row marquee-row-reverse flex w-max gap-2">
+        {
+          [...TICKER_BOTTOM, ...TICKER_BOTTOM].map((tool) => (
+            <span class="chip whitespace-nowrap">{tool}</span>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-10 grid gap-x-12 gap-y-10 sm:grid-cols-2">
     {
-      skillGroups.map((group) => (
-        <div>
+      skillGroups.map((group, i) => (
+        <div data-reveal style={`--reveal-delay:${i * 0.06}s`}>
           <h3 class="font-display text-ink text-lg font-bold">{group.title}</h3>
           <ul class="mt-4 flex flex-wrap gap-2" role="list">
             {group.items.map((item) => (

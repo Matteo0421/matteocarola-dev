@@ -130,3 +130,227 @@ body {
     @apply text-ink font-semibold;
   }
 }
+
+/*
+ * Motion — redesign «wow».
+ * Regola di ingaggio: tutto ciò che si muove vive sotto
+ * prefers-reduced-motion: no-preference; i reveal richiedono anche html.js
+ * (classe messa dallo script inline nel <head>, prima del primo paint),
+ * così senza JS il contenuto resta sempre visibile.
+ */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* Frecce dei link/bottoni: scattano in diagonale al passaggio. */
+.arr {
+  display: inline-block;
+}
+
+/* Sottolineatura animata della nav (l'underline appare da sinistra). */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -4px;
+  left: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.nav-link:hover::after,
+.nav-link[aria-current]::after {
+  transform: scaleX(1);
+}
+.nav-link[aria-current] {
+  color: var(--ink);
+}
+
+/* Header: il bordo/ombra compaiono solo dopo il primo scroll. */
+#site-header {
+  border-color: transparent;
+}
+#site-header.is-scrolled {
+  border-color: var(--line);
+  box-shadow: 0 1px 12px rgb(0 0 0 / 4%);
+}
+
+/* Watermark: il numero di sezione, gigante e solo contorno. */
+.section-ghost {
+  position: absolute;
+  top: 1rem;
+  right: -0.5rem;
+  z-index: 0;
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 16vw, 11rem);
+  font-weight: 700;
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--line);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Ornamenti hero: griglia di punti sfumata + bagliore dell'accento. */
+.hero-dots {
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse 75% 90% at 30% 20%, black, transparent 68%);
+  -webkit-mask-image: radial-gradient(ellipse 75% 90% at 30% 20%, black, transparent 68%);
+  opacity: 0.75;
+}
+.hero-glow {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--accent) 9%, transparent),
+    transparent 72%
+  );
+}
+
+/* Barra di progresso lettura dei post (sopra l'header, non interattiva). */
+.read-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  height: 3px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+
+/* Timeline esperienza: linea statica + linea accento che si disegna. */
+.tl-line,
+.tl-draw {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 0;
+  width: 2px;
+}
+.tl-line {
+  background: var(--line);
+}
+.tl-draw {
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Reveal on scroll: nascosto solo se JS c'è (html.js), rivelato con .in. */
+  html.js [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+    transition-delay: var(--reveal-delay, 0s);
+  }
+  html.js [data-reveal].in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Hero: entrata orchestrata, solo CSS (parte da sola al load). */
+  .hero-step {
+    opacity: 0;
+    animation: rise 0.65s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    animation-delay: var(--step-delay, 0s);
+  }
+  .hero-line {
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: grow-x 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.85s forwards;
+  }
+
+  /* Micro-interazioni. */
+  .arr {
+    transition: transform 0.2s ease;
+  }
+  .btn-primary:hover .arr,
+  .btn-ghost:hover .arr,
+  .link-arrow:hover .arr {
+    transform: translate(2px, -2px);
+  }
+  .btn-primary,
+  .btn-ghost {
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      opacity 0.2s ease,
+      transform 0.18s ease;
+  }
+  .btn-primary:hover,
+  .btn-ghost:hover {
+    transform: translateY(-1px);
+  }
+  .btn-primary:active,
+  .btn-ghost:active {
+    transform: scale(0.97);
+  }
+  .nav-link::after {
+    transition: transform 0.25s ease;
+  }
+
+  /* Marquee competenze: scorre piano, si ferma al passaggio del mouse. */
+  .marquee-row {
+    animation: marquee 46s linear infinite;
+  }
+  .marquee-row-reverse {
+    animation-direction: reverse;
+    animation-duration: 54s;
+  }
+  .marquee:hover .marquee-row {
+    animation-play-state: paused;
+  }
+
+  /* Timeline: la linea accento si disegna quando la sezione è in vista. */
+  html.js [data-reveal].in .tl-draw {
+    transform: scaleY(1);
+    transition: transform 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) 0.2s;
+  }
+
+  /* Nodo "attuale" della timeline: pulsa piano. */
+  .tl-node-now::after {
+    animation: pulse-soft 2.4s ease-in-out infinite;
+  }
+}

@@ -1,0 +1,88 @@
+---
+/**
+ * Anteprima del Tech Radar in home: il radar SVG compatto (blip cliccabili
+ * che portano alle card di /radar) accanto a un titolo-link verso la pagina
+ * completa. La voce «Tech Radar» dell'header punta qui (#radar).
+ * Se non ci sono ancora card, la sezione semplicemente non viene resa.
+ */
+import { getCollection } from 'astro:content';
+import RadarChart from './RadarChart.astro';
+import { asLocale, localizedPath, useTranslations } from '../i18n/ui';
+
+const locale = asLocale(Astro.currentLocale);
+const ui = useTranslations(locale);
+const radarHref = localizedPath('/radar', locale);
+
+const entries = (await getCollection('radar')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+// Stessa regola di RadarPage: gli anchor delle card sono derivati dall'id.
+const anchorIdOf = (id: string) => `card-${id.replace(/[^a-zA-Z0-9-]/g, '-')}`;
+
+const blips = entries.map((entry) => ({
+  anchorId: anchorIdOf(entry.id),
+  title: entry.data.title,
+  tags: entry.data.tags,
+  pubDate: entry.data.pubDate,
+}));
+---
+
+{
+  entries.length > 0 && (
+    <section
+      id="radar"
+      class="border-line bg-bg-alt scroll-mt-20 border-t"
+      aria-labelledby="radar-strip-title"
+    >
+      <div class="mx-auto grid max-w-5xl items-center gap-10 px-5 py-16 md:grid-cols-[340px_1fr] md:gap-14 md:px-8 md:py-20">
+        <div data-reveal>
+          <RadarChart {blips} hrefBase={radarHref} compact />
+        </div>
+        <div>
+          <p class="text-accent text-xs font-semibold tracking-[0.16em] uppercase" data-reveal>
+            {ui.radarStrip.kicker}
+          </p>
+          <h2
+            id="radar-strip-title"
+            class="font-display text-ink mt-3 text-3xl font-bold tracking-tight md:text-4xl"
+            data-reveal
+            style="--reveal-delay:.06s"
+          >
+            <a
+              href={radarHref}
+              class="link-arrow hover:text-accent inline-flex items-center gap-3 transition-colors"
+            >
+              {ui.radar.title}
+              <span class="arr text-accent text-[0.6em]" aria-hidden="true">
+                ↗
+              </span>
+            </a>
+          </h2>
+          <p
+            class="text-ink-soft mt-4 max-w-xl text-[15px] leading-relaxed"
+            data-reveal
+            style="--reveal-delay:.12s"
+          >
+            {ui.radarStrip.copy}
+          </p>
+          <p
+            class="text-ink-mute mt-5 flex flex-wrap items-center gap-x-5 gap-y-1 text-[13px]"
+            data-reveal
+            style="--reveal-delay:.18s"
+          >
+            <span>
+              {entries.length} {ui.radarStrip.countLabel}
+            </span>
+            <a href={radarHref} class="text-accent link-arrow font-medium hover:underline">
+              {ui.radarStrip.linkLabel}{' '}
+              <span class="arr" aria-hidden="true">
+                →
+              </span>
+            </a>
+          </p>
+        </div>
+      </div>
+    </section>
+  )
+}
