@@ -144,8 +144,9 @@ GitHub Actions (cron, 2×/settimana)
   └─ scripts/radar/generate.mjs   (Node 22, zero dipendenze npm)
        ├─ 1. fetch delle fonti     AWS What's New (RSS) · Hacker News (API Algolia)
        │                           · GitHub Search (repo nuovi in crescita)
+       │                           · TechCrunch + The Verge (tendenze)
        ├─ 2. dedup per URL         contro le card già in src/content/radar/
-       ├─ 3. Gemini (free tier)    sceglie ≤3 novità e scrive titolo, sintesi
+       ├─ 3. Gemini (free tier)    compone il mix (1 tendenza + 2 tecniche)
        │                           e tag in italiano (output JSON con schema)
        └─ 4. card in Markdown  →   Pull Request  →  review umana  →  merge
                                                                       └─ Vercel pubblica
@@ -184,7 +185,7 @@ Scelte deliberate:
 - **JS solo per la chat**: il markup del widget è prerendered; la logica (~2 KB) si carica con un import dinamico alla prima apertura. Pannello accessibile: `role="dialog"`, `aria-live` sui messaggi, Esc per chiudere, focus gestito.
 - **Costo zero**: Gemini free tier (embeddings + generazione), Vercel Hobby; la quota gratuita fa da cap globale naturale oltre al rate limit.
 
-Per lavorarci in locale: `GEMINI_API_KEY` in `.env` (vedi `.env.example`), poi `npm run rag:build` dopo ogni modifica ai contenuti. In produzione la stessa chiave va negli Environment Variables di Vercel.
+Per lavorarci in locale: `GEMINI_API_KEY` in `.env` (vedi `.env.example`), poi `npm run rag:build` dopo ogni modifica ai contenuti in `src/data/` (per le card del radar non serve: la pipeline rigenera l'indice dentro la stessa PR). In produzione la stessa chiave va negli Environment Variables di Vercel.
 
 ## SEO
 

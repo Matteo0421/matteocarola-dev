@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: 22
 
-      # Zero dipendenze npm: niente install, parte subito.
+      # Lo script di generazione resta zero-dipendenze (fetch nativa).
       - name: Genera le card proposte
         run: node scripts/radar/generate.mjs
         env:
@@ -41,11 +41,27 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_BODY_PATH: ${{ runner.temp }}/radar-pr-body.md
 
+      # Se ci sono card nuove, rigenera l'indice del chatbot NELLA STESSA PR:
+      # al merge arriva tutto coerente e il gate rag:check della CI resta verde
+      # (prima ogni merge di card lasciava l'indice stale, da rigenerare a mano).
+      - name: Rigenera l'indice RAG se ci sono card nuove
+        run: |
+          if [ -n "$(git status --porcelain src/content/radar)" ]; then
+            npm ci
+            npx tsx scripts/rag/build-index.ts
+          else
+            echo "Nessuna card nuova: indice invariato."
+          fi
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
       # Se lo script non ha scritto card (nulla di nuovo), non crea nessuna PR.
       - name: Apri la Pull Request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
-          add-paths: src/content/radar/*.md
+          add-paths: |
+            src/content/radar/*.md
+            src/rag/index.json
           branch: radar/proposte
           delete-branch: true
           commit-message: 'radar: nuove card proposte dalla pipeline'

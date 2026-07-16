@@ -2,10 +2,16 @@
 /**
  * Pagina Tech Radar, condivisa tra le due lingue. L'interfaccia è localizzata;
  * le CARD restano in italiano (contenuti d'attualità generati dalla pipeline).
+ *
+ * Struttura: radar SVG (blip cliccabili) → card recenti per esteso →
+ * archivio raggruppato per mese in <details> nativi, così la pagina resta
+ * corta anche con centinaia di card.
  */
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import Footer from '../Footer.astro';
 import Header from '../Header.astro';
+import RadarCard from '../RadarCard.astro';
+import RadarChart from '../RadarChart.astro';
 import { asLocale, useTranslations } from '../../i18n/ui';
 import Base from '../../layouts/Base.astro';
 
@@ -16,19 +22,34 @@ const entries = (await getCollection('radar')).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 
-/* Il body del file .md è la nota personale, opzionale: si renderizza solo se presente. */
-const cards = await Promise.all(
-  entries.map(async (entry) => {
-    const { Content } = await render(entry);
-    return { entry, Content, hasNote: (entry.body ?? '').trim() !== '' };
-  }),
-);
+const anchorIdOf = (id: string) => `card-${id.replace(/[^a-zA-Z0-9-]/g, '-')}`;
 
-const dateFormat = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'it-IT', {
-  day: 'numeric',
+const blips = entries.map((entry) => ({
+  anchorId: anchorIdOf(entry.id),
+  title: entry.data.title,
+  tags: entry.data.tags,
+  pubDate: entry.data.pubDate,
+}));
+
+/* Recenti (≤35 giorni) per esteso — mai meno di 5, così la pagina non è
+ * vuota nei periodi lenti; il resto va nell'archivio per mese. */
+const now = Date.now();
+const isRecent = (d: Date) => (now - d.valueOf()) / 86_400_000 <= 35;
+const recentCount = Math.max(entries.filter((e) => isRecent(e.data.pubDate)).length, 5);
+const recent = entries.slice(0, recentCount);
+const archived = entries.slice(recentCount);
+
+const monthFormat = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'it-IT', {
   month: 'long',
   year: 'numeric',
 });
+const months: { label: string; items: typeof archived }[] = [];
+for (const entry of archived) {
+  const label = monthFormat.format(entry.data.pubDate);
+  const bucket = months.at(-1);
+  if (bucket && bucket.label === label) bucket.items.push(entry);
+  else months.push({ label, items: [entry] });
+}
 ---
 
 <Base title={ui.radar.metaTitle} description={ui.radar.metaDescription}>
@@ -55,60 +76,75 @@ const dateFormat = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'it-IT', 
           {ui.radar.howItWorks}
         </p>
 
+        {entries.length > 0 && <RadarChart {blips} />}
+
+        {/* h2 solo per screen reader: mantiene la gerarchia h1→h2→h3 delle card. */}
+        <h2 class="sr-only">{ui.radar.latestTitle}</h2>
         <div class="border-line mt-12 border-t">
           {
-            cards.length === 0 ? (
+            entries.length === 0 ? (
               <p class="text-ink-mute py-12 text-[15px]">{ui.radar.empty}</p>
             ) : (
               <div class="divide-line divide-y">
-                {cards.map(({ entry, Content, hasNote }) => (
-                  <article class="py-8">
-                    <p class="text-ink-mute text-[13px]">
-                      <time datetime={entry.data.pubDate.toISOString().slice(0, 10)}>
-                        {dateFormat.format(entry.data.pubDate)}
-                      </time>
-                      <span aria-hidden="true"> · </span>
-                      <span>{entry.data.sourceName}</span>
-                    </p>
-                    <h2 class="font-display text-ink mt-2 text-xl font-bold md:text-2xl">
-                      <a
-                        href={entry.data.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="hover:text-accent transition-colors"
-                      >
-                        {entry.data.title}
-                        <span class="text-accent ml-1 text-base" aria-hidden="true">
-                          ↗
-                        </span>
-                      </a>
-                    </h2>
-                    <p class="text-ink-soft mt-3 max-w-3xl text-[15px] leading-relaxed">
-                      {entry.data.summary}
-                    </p>
-                    {hasNote && (
-                      <div class="border-accent mt-4 max-w-3xl border-l-2 pl-4">
-                        <p class="text-accent text-[12px] font-semibold tracking-wide uppercase">
-                          {ui.radar.noteLabel}
-                        </p>
-                        <div class="text-ink-soft mt-1 text-[15px] leading-relaxed italic">
-                          <Content />
-                        </div>
-                      </div>
-                    )}
-                    <ul class="mt-5 flex flex-wrap gap-2" role="list">
-                      {entry.data.tags.map((tag) => (
-                        <li class="chip">{tag}</li>
-                      ))}
-                    </ul>
-                  </article>
+                {recent.map((entry) => (
+                  <RadarCard {entry} anchorId={anchorIdOf(entry.id)} />
                 ))}
               </div>
             )
           }
         </div>
+
+        {
+          months.length > 0 && (
+            <div class="mt-4">
+              <h2 class="font-display text-ink text-lg font-bold md:text-xl">
+                {ui.radar.archiveTitle}
+              </h2>
+              <div class="border-line divide-line mt-4 divide-y border-t" id="radar-archive">
+                {months.map(({ label, items }) => (
+                  <details class="group py-1">
+                    <summary class="text-ink-soft hover:text-ink flex cursor-pointer list-none items-center gap-3 py-4 text-[15px] font-medium capitalize transition-colors [&::-webkit-details-marker]:hidden">
+                      <span
+                        class="text-accent inline-block transition-transform group-open:rotate-90"
+                        aria-hidden="true"
+                      >
+                        ▸
+                      </span>
+                      {label}
+                      <span class="chip ml-auto normal-case">
+                        {items.length} {ui.radar.cardsLabel}
+                      </span>
+                    </summary>
+                    <div class="divide-line divide-y pl-6">
+                      {items.map((entry) => (
+                        <RadarCard {entry} anchorId={anchorIdOf(entry.id)} />
+                      ))}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </div>
+          )
+        }
       </div>
     </section>
   </main>
   <Footer />
 </Base>
+
+<script>
+  // Un blip può puntare a una card dentro un <details> chiuso: aprilo prima
+  // di scrollare. Unico JS della pagina, pochi byte.
+  function openTarget() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (!id) return;
+    const target = document.getElementById(id);
+    const details = target?.closest('details');
+    if (details && !details.open) {
+      details.open = true;
+      target?.scrollIntoView();
+    }
+  }
+  openTarget();
+  window.addEventListener('hashchange', openTarget);
+</script>
