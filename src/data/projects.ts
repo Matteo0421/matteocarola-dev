@@ -38,7 +38,7 @@ export const projects: Record<Locale, Project[]> = {
     },
     {
       title: 'matteocarola.com — questo sito',
-      client: 'Progetto personale · open source',
+      client: 'Progetto personale · codice pubblico',
       year: '2026',
       description:
         'Il sito che stai guardando, trattato come un progetto in produzione: Astro 5 con TypeScript strict, Tailwind CSS 4, tema chiaro/scuro senza flash, SEO con Open Graph e sitemap, CI su GitHub Actions e zero JavaScript superfluo. Il codice è pubblico, con README completo.',
@@ -73,7 +73,7 @@ export const projects: Record<Locale, Project[]> = {
     },
     {
       title: 'matteocarola.com — this website',
-      client: 'Personal project · open source',
+      client: 'Personal project · public source code',
       year: '2026',
       description:
         'The site you’re looking at, treated as a production project: Astro 5 with strict TypeScript, Tailwind CSS 4, flash-free light/dark theme, SEO with Open Graph and sitemap, CI on GitHub Actions and zero unnecessary JavaScript. The code is public, with a complete README.',

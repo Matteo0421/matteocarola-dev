@@ -6,7 +6,7 @@
 [![CI](https://github.com/Matteo0421/matteocarola-dev/actions/workflows/ci.yml/badge.svg)](https://github.com/Matteo0421/matteocarola-dev/actions/workflows/ci.yml)
 [![Astro](https://img.shields.io/badge/Astro-5-blueviolet)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
+[![License: Source-Available](https://img.shields.io/badge/License-Source--Available-blue.svg)](./LICENSE)
 
 **Live:** [matteocarola.com](https://matteocarola.com)
 
@@ -245,4 +245,4 @@ Checklist completa in `src/data/projects.ts` (commento in testa al file).
 
 ## Licenza
 
-Codice sotto licenza [MIT](./LICENSE). I testi e i contenuti personali (bio, progetti, immagini) sono © Matteo Carola — riusali solo con permesso.
+Codice **source-available** ([LICENSE](./LICENSE)): è pubblico e consultabile per studio, ma non è riutilizzabile senza permesso scritto. I testi e i contenuti personali (bio, progetti, immagini) sono © Matteo Carola.

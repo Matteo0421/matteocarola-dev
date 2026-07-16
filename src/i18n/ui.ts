@@ -167,11 +167,11 @@ export const it: Dictionary = {
     title: 'Tech Radar',
     metaTitle: 'Tech Radar — Matteo Carola',
     metaDescription:
-      'Segnalazioni brevi su cloud, AWS e AI: selezionate da una pipeline open source (GitHub Actions + LLM) e approvate una a una.',
+      'Segnalazioni brevi su cloud, AWS e AI: selezionate da una pipeline automatica dal codice pubblico (GitHub Actions + LLM) e approvate una a una.',
     intro:
       'Novità su cloud, AI e mondo tech che ritengo valga la pena conoscere: poche card brevi — alcune tecniche, altre per tutti — sempre con il link alla fonte.',
     howItWorks:
-      'Come funziona: una pipeline open source (GitHub Actions + Gemini) pesca le novità dalle fonti, le sintetizza e apre una Pull Request; io approvo, scarto o aggiungo una nota. Niente si pubblica da solo.',
+      'Come funziona: una pipeline automatica dal codice pubblico (GitHub Actions + Gemini) pesca le novità dalle fonti, le sintetizza e apre una Pull Request; io approvo, scarto o aggiungo una nota. Niente si pubblica da solo.',
     empty: 'Le prime segnalazioni sono in arrivo: il radar è appena stato acceso.',
     noteLabel: 'La mia nota',
     sourceLabel: 'Fonte',
@@ -302,11 +302,11 @@ export const en: Dictionary = {
     title: 'Tech Radar',
     metaTitle: 'Tech Radar — Matteo Carola',
     metaDescription:
-      'Short takes on cloud, AWS and AI: picked by an open-source pipeline (GitHub Actions + LLM) and approved one by one.',
+      'Short takes on cloud, AWS and AI: picked by an automated pipeline with public source code (GitHub Actions + LLM) and approved one by one.',
     intro:
       'News on cloud, AI and the tech world I think is worth knowing: a few short cards — some technical, some for everyone — always with a link to the source.',
     howItWorks:
-      'How it works: an open-source pipeline (GitHub Actions + Gemini) pulls news from the sources, summarizes it and opens a Pull Request; I approve, discard or add a note. Nothing publishes itself. (Cards are written in Italian.)',
+      'How it works: an automated pipeline with public source code (GitHub Actions + Gemini) pulls news from the sources, summarizes it and opens a Pull Request; I approve, discard or add a note. Nothing publishes itself. (Cards are written in Italian.)',
     empty: 'The first picks are on their way: the radar has just been switched on.',
     noteLabel: 'My note',
     sourceLabel: 'Source',
