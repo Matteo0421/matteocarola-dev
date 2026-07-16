@@ -10,10 +10,12 @@ const { id, number, title } = Astro.props;
 
 <section
   id={id}
-  class="border-line scroll-mt-20 border-t py-16 md:py-24"
+  class="border-line relative scroll-mt-20 overflow-hidden border-t py-16 md:py-24"
   aria-labelledby={`${id}-title`}
 >
-  <div class="mx-auto max-w-5xl px-5 md:px-8">
+  {/* Watermark: numero di sezione gigante, solo contorno, dietro al contenuto. */}
+  <span class="section-ghost" aria-hidden="true">{number}</span>
+  <div class="relative mx-auto max-w-5xl px-5 md:px-8">
     <h2
       id={`${id}-title`}
       class="font-display text-ink text-3xl font-bold tracking-tight md:text-4xl"
