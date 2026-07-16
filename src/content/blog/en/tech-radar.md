@@ -24,7 +24,8 @@ whole difference lies there: the merge — i.e. the publication — is always my
 1. **Cron on GitHub Actions** — Monday and Thursday at 6:00 UTC a workflow runs a single Node
    script.
 2. **Free sources** — the script pulls candidates from AWS What's New (RSS), Hacker News (Algolia
-   API) and GitHub Search (fast-growing new repositories). No API keys needed for the sources.
+   API), GitHub Search (fast-growing new repositories), plus TechCrunch and The Verge for trending
+   news anyone can enjoy. No API keys needed for the sources.
 3. **Dedup** — already-published candidates are discarded by comparing normalized URLs against the
    existing cards in the repository.
 4. **Selection and summarization with Gemini** — the model receives a numbered list of candidates

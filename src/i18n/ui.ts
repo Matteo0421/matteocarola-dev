@@ -142,7 +142,7 @@ export const it: Dictionary = {
     metaDescription:
       'Segnalazioni brevi su cloud, AWS e AI: selezionate da una pipeline open source (GitHub Actions + LLM) e approvate una a una.',
     intro:
-      'Novità su cloud, AWS e AI che ritengo valga la pena conoscere: poche card, brevi, sempre con il link alla fonte.',
+      'Novità su cloud, AI e mondo tech che ritengo valga la pena conoscere: poche card brevi — alcune tecniche, altre per tutti — sempre con il link alla fonte.',
     howItWorks:
       'Come funziona: una pipeline open source (GitHub Actions + Gemini) pesca le novità dalle fonti, le sintetizza e apre una Pull Request; io approvo, scarto o aggiungo una nota. Niente si pubblica da solo.',
     empty: 'Le prime segnalazioni sono in arrivo: il radar è appena stato acceso.',
@@ -156,7 +156,7 @@ export const it: Dictionary = {
       quarter: 'ultimo trimestre',
       older: 'oltre',
     },
-    categories: { ai: 'AI & LLM', aws: 'AWS & Cloud', dev: 'Dev & Tools', other: 'Altro' },
+    categories: { ai: 'AI & LLM', aws: 'AWS & Cloud', dev: 'Dev & Tools', other: 'Tendenze' },
     latestTitle: 'Ultime segnalazioni',
     archiveTitle: 'Archivio',
     cardsLabel: 'card',
@@ -259,7 +259,7 @@ export const en: Dictionary = {
     metaDescription:
       'Short takes on cloud, AWS and AI: picked by an open-source pipeline (GitHub Actions + LLM) and approved one by one.',
     intro:
-      'News on cloud, AWS and AI I think is worth knowing: a few short cards, always with a link to the source.',
+      'News on cloud, AI and the tech world I think is worth knowing: a few short cards — some technical, some for everyone — always with a link to the source.',
     howItWorks:
       'How it works: an open-source pipeline (GitHub Actions + Gemini) pulls news from the sources, summarizes it and opens a Pull Request; I approve, discard or add a note. Nothing publishes itself. (Cards are written in Italian.)',
     empty: 'The first picks are on their way: the radar has just been switched on.',
@@ -273,7 +273,7 @@ export const en: Dictionary = {
       quarter: 'last quarter',
       older: 'older',
     },
-    categories: { ai: 'AI & LLM', aws: 'AWS & Cloud', dev: 'Dev & Tools', other: 'Other' },
+    categories: { ai: 'AI & LLM', aws: 'AWS & Cloud', dev: 'Dev & Tools', other: 'Trends' },
     latestTitle: 'Latest picks',
     archiveTitle: 'Archive',
     cardsLabel: 'cards',

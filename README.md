@@ -144,8 +144,9 @@ GitHub Actions (cron, 2×/settimana)
   └─ scripts/radar/generate.mjs   (Node 22, zero dipendenze npm)
        ├─ 1. fetch delle fonti     AWS What's New (RSS) · Hacker News (API Algolia)
        │                           · GitHub Search (repo nuovi in crescita)
+       │                           · TechCrunch + The Verge (tendenze)
        ├─ 2. dedup per URL         contro le card già in src/content/radar/
-       ├─ 3. Gemini (free tier)    sceglie ≤3 novità e scrive titolo, sintesi
+       ├─ 3. Gemini (free tier)    compone il mix (1 tendenza + 2 tecniche)
        │                           e tag in italiano (output JSON con schema)
        └─ 4. card in Markdown  →   Pull Request  →  review umana  →  merge
                                                                       └─ Vercel pubblica

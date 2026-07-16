@@ -3,11 +3,12 @@
  *
  * Pipeline semi-automatica, zero dipendenze npm (Node >= 22, fetch nativa):
  *   1. pesca i candidati dalle fonti gratuite (AWS What's New RSS,
- *      Hacker News via API Algolia, GitHub Search API);
+ *      Hacker News via API Algolia, GitHub Search API, TechCrunch e
+ *      The Verge per le notizie di tendenza);
  *   2. scarta ciò che è già pubblicato in src/content/radar/ (dedup per URL);
- *   3. chiede a Gemini (free tier) di scegliere le card più interessanti
- *      per un pubblico di sviluppatori cloud/AI e di scrivere titolo,
- *      sintesi e tag in italiano — SOLO a partire dai dati forniti;
+ *   3. chiede a Gemini (free tier) di comporre un mix — 1 notizia di
+ *      tendenza leggibile da tutti + 2 tecniche cloud/AI — scrivendo
+ *      titolo, sintesi e tag in italiano — SOLO a partire dai dati forniti;
  *   4. scrive i file Markdown delle card e il body della Pull Request.
  *
  * Non pubblica nulla da solo: il workflow (.github/workflows/radar.yml)
@@ -96,13 +97,8 @@ function truncate(text, max) {
 
 /* ------------------------------------------------------------------ fonti */
 
-/** AWS "What's New" — feed RSS ufficiale, parsing minimale senza dipendenze. */
-async function fetchAwsWhatsNew() {
-  const response = await fetchWithTimeout(
-    'https://aws.amazon.com/about-aws/whats-new/recent/feed/',
-    { headers: { accept: 'application/rss+xml, application/xml, text/xml' } },
-  );
-  const xml = await response.text();
+/** Parser minimale per feed RSS 2.0 (<item>): usato da AWS e TechCrunch. */
+function parseRssItems(xml, source, max) {
   const items = [];
   for (const [, itemXml] of xml.matchAll(/<item>([\s\S]*?)<\/item>/g)) {
     const field = (name) => {
@@ -113,13 +109,47 @@ async function fetchAwsWhatsNew() {
     const title = field('title');
     const link = field('link');
     if (!title || !link) continue;
-    items.push({
-      source: 'AWS What’s New',
-      title,
-      url: link,
-      context: truncate(field('description'), 400),
-    });
-    if (items.length >= 15) break;
+    items.push({ source, title, url: link, context: truncate(field('description'), 400) });
+    if (items.length >= max) break;
+  }
+  return items;
+}
+
+/** AWS "What's New" — feed RSS ufficiale, parsing minimale senza dipendenze. */
+async function fetchAwsWhatsNew() {
+  const response = await fetchWithTimeout(
+    'https://aws.amazon.com/about-aws/whats-new/recent/feed/',
+    { headers: { accept: 'application/rss+xml, application/xml, text/xml' } },
+  );
+  return parseRssItems(await response.text(), 'AWS What’s New', 15);
+}
+
+/** TechCrunch — notizie di tendenza su startup, AI e prodotti (RSS 2.0). */
+async function fetchTechCrunch() {
+  const response = await fetchWithTimeout('https://techcrunch.com/feed/', {
+    headers: { accept: 'application/rss+xml, application/xml, text/xml' },
+  });
+  return parseRssItems(await response.text(), 'TechCrunch', 12);
+}
+
+/** The Verge — tech consumer e cultura digitale (feed Atom: <entry> + link href). */
+async function fetchTheVerge() {
+  const response = await fetchWithTimeout('https://www.theverge.com/rss/index.xml', {
+    headers: { accept: 'application/atom+xml, application/xml, text/xml' },
+  });
+  const xml = await response.text();
+  const items = [];
+  const text = (raw) => stripHtml((raw ?? '').replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1'));
+  for (const [, entryXml] of xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)) {
+    const title = text(entryXml.match(/<title[^>]*>([\s\S]*?)<\/title>/)?.[1]);
+    const link = entryXml.match(/<link[^>]*href="([^"]+)"/)?.[1] ?? '';
+    const summary = text(
+      entryXml.match(/<summary[^>]*>([\s\S]*?)<\/summary>/)?.[1] ??
+        entryXml.match(/<content[^>]*>([\s\S]*?)<\/content>/)?.[1],
+    );
+    if (!title || !link) continue;
+    items.push({ source: 'The Verge', title, url: link, context: truncate(summary, 400) });
+    if (items.length >= 12) break;
   }
   return items;
 }
@@ -204,21 +234,28 @@ async function pickCardsWithGemini(candidates) {
 
   const prompt = [
     'Sei il curatore del "Tech Radar" di un sito personale di un software engineer',
-    'italiano specializzato in cloud (AWS) e Generative AI. Il pubblico è fatto di',
-    'sviluppatori e cloud engineer.',
+    'italiano specializzato in cloud (AWS) e Generative AI. Il pubblico è MISTO:',
+    'sviluppatori e cloud engineer, ma anche lettori curiosi non tecnici.',
     '',
     `Qui sotto trovi ${candidates.length} candidati numerati, pescati da fonti diverse.`,
-    `Scegli le ${MAX_CARDS} novità più interessanti e utili per questo pubblico`,
-    '(meno di 3 solo se i candidati validi sono davvero pochi). Criteri:',
-    '- privilegia novità concrete su cloud/AWS, AI/LLM e strumenti per sviluppatori;',
+    `Scegli le ${MAX_CARDS} novità più interessanti componendo questo MIX`,
+    '(meno di 3 solo se i candidati validi sono davvero pochi):',
+    '- ESATTAMENTE 1 notizia "di tendenza": un fatto tech di cui si parla, comprensibile',
+    '  e interessante anche per chi non è del settore (nuovi prodotti, AI nella vita',
+    '  quotidiana, aziende tech, tecnologia e società). Solo se nessun candidato si',
+    '  presta davvero, ripiega su 3 notizie tecniche.',
+    '- Le altre 2 tecniche e concrete: cloud/AWS, AI/LLM, strumenti per sviluppatori.',
+    'Criteri comuni:',
     '- varia le fonti quando possibile (non scegliere 3 item dalla stessa fonte);',
     '- evita politica, polemiche, annunci puramente commerciali e item troppo di nicchia.',
     '',
-    'Per ogni scelta scrivi, in ITALIANO:',
+    'Per ogni scelta scrivi, in ITALIANO e in linguaggio piano (le sigle vanno spiegate',
+    'al primo uso; deve essere chiaro perché la notizia è interessante; per la card di',
+    'tendenza evita del tutto il gergo tecnico):',
     '- "title": un titolo breve e chiaro (max 80 caratteri, niente clickbait);',
     '- "summary": una sintesi di 2 frasi basata SOLO sulle informazioni fornite',
     '  (titolo e contesto). Non inventare dettagli, numeri o funzionalità;',
-    '- "tags": da 2 a 4 tag brevi (es. "AWS", "LLM", "Serverless", "Open source").',
+    '- "tags": da 2 a 4 tag brevi (es. "AWS", "LLM", "Tendenze", "Open source").',
     '',
     'Rispondi con un array JSON di oggetti { "id", "title", "summary", "tags" },',
     'dove "id" è il numero del candidato scelto.',
@@ -337,6 +374,8 @@ async function main() {
     ['AWS What’s New', fetchAwsWhatsNew],
     ['Hacker News', fetchHackerNews],
     ['GitHub Trending', fetchGithubTrending],
+    ['TechCrunch', fetchTechCrunch],
+    ['The Verge', fetchTheVerge],
   ];
   const candidates = [];
   for (const [name, fetcher] of sources) {

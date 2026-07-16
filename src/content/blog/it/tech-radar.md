@@ -24,8 +24,8 @@ sempre una decisione mia.
 1. **Cron su GitHub Actions** — lunedì e giovedì alle 6:00 UTC parte un workflow che esegue un
    singolo script Node.
 2. **Fonti gratuite** — lo script pesca i candidati da AWS What's New (RSS), Hacker News (API
-   Algolia) e GitHub Search (repository nuovi in forte crescita). Nessuna API key necessaria per le
-   fonti.
+   Algolia), GitHub Search (repository nuovi in forte crescita), più TechCrunch e The Verge per le
+   notizie di tendenza leggibili da tutti. Nessuna API key necessaria per le fonti.
 3. **Dedup** — i candidati già pubblicati vengono scartati confrontando gli URL normalizzati con le
    card esistenti nel repository.
 4. **Selezione e sintesi con Gemini** — il modello riceve la lista numerata dei candidati e sceglie
