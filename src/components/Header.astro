@@ -18,7 +18,8 @@ const otherLabel = otherLocale.toUpperCase();
     </a>
 
     <div class="flex items-center gap-3">
-      <nav aria-label={ui.a11y.mainNav} class="hidden md:block">
+      {/* Nav estesa da lg: con 8 voci sotto i 1024px andrebbe a capo. */}
+      <nav aria-label={ui.a11y.mainNav} class="hidden lg:block">
         <ul class="flex items-center gap-6">
           {
             ui.nav.map((item, i) => (
@@ -49,7 +50,7 @@ const otherLabel = otherLocale.toUpperCase();
 
       <ThemeToggle />
 
-      <details id="mobile-nav" class="relative md:hidden">
+      <details id="mobile-nav" class="relative lg:hidden">
         <summary
           class="border-line text-ink-soft flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-md border [&::-webkit-details-marker]:hidden"
           aria-label={ui.a11y.openMenu}
