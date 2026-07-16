@@ -139,8 +139,9 @@ const strings = {
 
 <script>
   // Solo l'aggancio del launcher: il resto del JS arriva alla prima apertura.
-  const launcher = document.getElementById('chat-launcher');
-  launcher?.addEventListener('click', async () => {
+  // Delegato sul document, così sopravvive alle view transitions.
+  document.addEventListener('click', async (event) => {
+    if (!(event.target instanceof Element) || !event.target.closest('#chat-launcher')) return;
     const { toggleChat } = await import('../scripts/chat-panel');
     toggleChat();
   });

@@ -17,6 +17,7 @@ const { id, number, title } = Astro.props;
     <h2
       id={`${id}-title`}
       class="font-display text-ink text-3xl font-bold tracking-tight md:text-4xl"
+      data-reveal
     >
       <span class="text-accent mr-3 align-middle text-base font-bold md:text-lg" aria-hidden="true">
         {number}

@@ -134,7 +134,8 @@ for (const entry of archived) {
 
 <script>
   // Un blip può puntare a una card dentro un <details> chiuso: aprilo prima
-  // di scrollare. Unico JS della pagina, pochi byte.
+  // di scrollare. Unico JS della pagina, pochi byte. Riagganciato ad ogni
+  // astro:page-load perché con le view transitions il DOM viene ricreato.
   function openTarget() {
     const id = decodeURIComponent(location.hash.slice(1));
     if (!id) return;
@@ -146,5 +147,6 @@ for (const entry of archived) {
     }
   }
   openTarget();
+  document.addEventListener('astro:page-load', openTarget);
   window.addEventListener('hashchange', openTarget);
 </script>

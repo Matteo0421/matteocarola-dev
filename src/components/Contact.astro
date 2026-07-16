@@ -8,7 +8,7 @@ const ui = useTranslations(Astro.currentLocale);
 ---
 
 <Section id="contatti" number="06" title={ui.sections.contact}>
-  <div class="max-w-2xl">
+  <div class="max-w-2xl" data-reveal>
     <p class="text-ink-soft text-[15px] leading-relaxed md:text-base">{ui.contact.invite}</p>
     <a
       href={`mailto:${profile.email}`}
@@ -19,11 +19,11 @@ const ui = useTranslations(Astro.currentLocale);
     <div class="mt-10 flex flex-wrap gap-3">
       <a href={profile.github} target="_blank" rel="noopener noreferrer" class="btn-ghost">
         GitHub
-        <span aria-hidden="true">↗</span>
+        <span class="arr" aria-hidden="true">↗</span>
       </a>
       <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" class="btn-ghost">
         LinkedIn
-        <span aria-hidden="true">↗</span>
+        <span class="arr" aria-hidden="true">↗</span>
       </a>
     </div>
   </div>

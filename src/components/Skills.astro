@@ -10,8 +10,8 @@ const ui = useTranslations(Astro.currentLocale);
 <Section id="competenze" number="02" title={ui.sections.skills}>
   <div class="grid gap-x-12 gap-y-10 sm:grid-cols-2">
     {
-      skillGroups.map((group) => (
-        <div>
+      skillGroups.map((group, i) => (
+        <div data-reveal style={`--reveal-delay:${i * 0.06}s`}>
           <h3 class="font-display text-ink text-lg font-bold">{group.title}</h3>
           <ul class="mt-4 flex flex-wrap gap-2" role="list">
             {group.items.map((item) => (

@@ -10,10 +10,16 @@ const ui = useTranslations(Astro.currentLocale);
 <Section id="progetti" number="03" title={ui.sections.projects}>
   <div class="divide-line divide-y">
     {
-      projects.map((project) => (
-        <article class="grid gap-3 py-8 first:pt-0 last:pb-0 md:grid-cols-[1fr_auto] md:gap-x-10">
+      projects.map((project, i) => (
+        <article
+          class="group grid gap-3 py-8 first:pt-0 last:pb-0 md:grid-cols-[1fr_auto] md:gap-x-10"
+          data-reveal
+          style={`--reveal-delay:${i * 0.05}s`}
+        >
           <div>
-            <h3 class="font-display text-ink text-xl font-bold md:text-2xl">{project.title}</h3>
+            <h3 class="font-display text-ink group-hover:text-accent text-xl font-bold transition-colors motion-safe:transition-[color,transform] motion-safe:duration-300 md:text-2xl motion-safe:md:group-hover:translate-x-1.5">
+              {project.title}
+            </h3>
             <p class="text-ink-mute mt-1 text-sm">{project.client}</p>
             <p class="text-ink-soft mt-4 max-w-3xl text-[15px] leading-relaxed">
               {project.description}
@@ -28,10 +34,12 @@ const ui = useTranslations(Astro.currentLocale);
                 href={project.link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-accent mt-5 inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
+                class="text-accent link-arrow mt-5 inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
               >
                 {project.link.label}
-                <span aria-hidden="true">↗</span>
+                <span class="arr" aria-hidden="true">
+                  ↗
+                </span>
               </a>
             )}
           </div>

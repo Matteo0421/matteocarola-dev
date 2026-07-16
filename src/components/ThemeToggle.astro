@@ -45,15 +45,17 @@ const ui = useTranslations(Astro.currentLocale);
 </button>
 
 <script>
-  const button = document.getElementById('theme-toggle');
+  // Delegato sul document e risincronizzato ad ogni pagina: il bottone viene
+  // ricreato dalle view transitions, i listener sul document sopravvivono.
   const root = document.documentElement;
 
   const syncPressed = () =>
-    button?.setAttribute('aria-pressed', String(root.dataset.theme === 'dark'));
+    document
+      .getElementById('theme-toggle')
+      ?.setAttribute('aria-pressed', String(root.dataset.theme === 'dark'));
 
-  syncPressed();
-
-  button?.addEventListener('click', () => {
+  document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element) || !event.target.closest('#theme-toggle')) return;
     const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
     root.dataset.theme = next;
     try {
@@ -63,4 +65,7 @@ const ui = useTranslations(Astro.currentLocale);
     }
     syncPressed();
   });
+
+  syncPressed();
+  document.addEventListener('astro:page-load', syncPressed);
 </script>
