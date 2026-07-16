@@ -83,6 +83,11 @@ const KEYWORDS: Record<Exclude<Category, 'other'>, string[]> = {
 
 function categorize(tags: string[]): Category {
   const tokens = tags.flatMap((tag) => tag.toLowerCase().split(/[^a-z0-9]+/)).filter(Boolean);
+  // Il tag "Tendenze" (assegnato dalla pipeline alle notizie per tutti) vince
+  // su tutto: una tendenza sull'AI deve stare nel quadrante Tendenze, non in AI.
+  if (tokens.some((token) => ['tendenze', 'tendenza', 'trend', 'trends'].includes(token))) {
+    return 'other';
+  }
   for (const category of ['ai', 'aws', 'dev'] as const) {
     if (tokens.some((token) => KEYWORDS[category].includes(token))) return category;
   }
