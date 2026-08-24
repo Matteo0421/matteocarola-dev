@@ -45,15 +45,32 @@ jobs:
       # al merge arriva tutto coerente e il gate rag:check della CI resta verde
       # (prima ogni merge di card lasciava l'indice stale, da rigenerare a mano).
       - name: Rigenera l'indice RAG se ci sono card nuove
+        id: cards
         run: |
           if [ -n "$(git status --porcelain src/content/radar)" ]; then
+            echo "nuove=true" >> "$GITHUB_OUTPUT"
             npm ci
             npx tsx scripts/rag/build-index.ts
           else
+            echo "nuove=false" >> "$GITHUB_OUTPUT"
             echo "Nessuna card nuova: indice invariato."
           fi
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      # Le PR aperte con il GITHUB_TOKEN non fanno partire il workflow CI: le sue
+      # run restano appese in "action_required" e nessun gate viene eseguito.
+      # Quindi gli stessi controlli della CI girano qui, dentro questa run, prima
+      # di aprire la PR: se una card rompe typecheck, lint, formato o build, la
+      # run diventa rossa e la PR non viene aperta.
+      - name: Gate della CI sulle card nuove
+        if: steps.cards.outputs.nuove == 'true'
+        run: |
+          npm run check
+          npm run lint
+          npm run format:check
+          npm run rag:check
+          npm run build
 
       # Se lo script non ha scritto card (nulla di nuovo), non crea nessuna PR.
       - name: Apri la Pull Request
