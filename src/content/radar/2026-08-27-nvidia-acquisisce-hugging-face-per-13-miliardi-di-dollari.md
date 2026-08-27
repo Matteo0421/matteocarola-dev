@@ -1,6 +1,6 @@
 ---
-title: "Nvidia acquisisce Hugging Face per 13 miliardi di dollari"
-summary: "Nvidia, leader nel settore dei chip per l'intelligenza artificiale, ha raggiunto un accordo per acquisire Hugging Face, una piattaforma molto popolare per lo sviluppo di modelli di IA. Questa mossa strategica rafforza ulteriormente la posizione di Nvidia nel panorama dell'intelligenza artificiale, integrando una vasta comunità di sviluppatori e risorse open source."
+title: "Nvidia in trattativa per acquisire Hugging Face per oltre 13 miliardi"
+summary: "Secondo Business Insider, Nvidia ha discusso l'acquisizione di Hugging Face, la piattaforma di riferimento per la condivisione di modelli di IA, per oltre 13 miliardi di dollari. Nessun accordo è stato annunciato: restano trattative, e se andassero in porto rafforzerebbero la presa di Nvidia sull'ecosistema open source dell'IA."
 tags: ["AI", "Acquisizioni", "Tendenze", "Open source"]
 sourceName: "Hacker News"
 sourceUrl: "https://www.businessinsider.com/nvidia-in-talks-to-buy-hugging-face-13-billion-dollars-2026-8"
