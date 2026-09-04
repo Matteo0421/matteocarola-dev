@@ -5,7 +5,8 @@
  *   1. pesca i candidati dalle fonti gratuite (AWS What's New RSS,
  *      Hacker News via API Algolia, GitHub Search API, TechCrunch e
  *      The Verge per le notizie di tendenza);
- *   2. scarta ciò che è già pubblicato in src/content/radar/ (dedup per URL);
+ *   2. scarta ciò che è già pubblicato in src/content/radar/ (dedup per URL)
+ *      e ciò che è troppo vecchio per essere una novità (vedi MAX_AGE_DAYS);
  *   3. chiede a Gemini (free tier) di comporre un mix — 1 notizia di
  *      tendenza leggibile da tutti + 2 tecniche cloud/AI — scrivendo
  *      titolo, sintesi e tag in italiano — SOLO a partire dai dati forniti;
@@ -20,7 +21,8 @@
  *
  * Env: GEMINI_API_KEY (obbligatoria salvo --dry-run), GITHUB_TOKEN (opzionale,
  *      alza i rate limit della Search API), GEMINI_MODEL (default gemini-2.5-flash),
- *      PR_BODY_PATH (se impostata, scrive lì il body della PR).
+ *      PR_BODY_PATH (se impostata, scrive lì il body della PR),
+ *      RADAR_MAX_AGE_DAYS (default 21, età massima di un candidato).
  */
 
 import { readdir, readFile, writeFile } from 'node:fs/promises';
@@ -29,6 +31,13 @@ import process from 'node:process';
 
 const DRY_RUN = process.argv.includes('--dry-run');
 const MAX_CARDS = 3;
+// I feed ripropongono annunci vecchi: il feed AWS ha fatto passare per novità
+// una release di due mesi prima (SnapStart per immagini container, PR #33).
+// Oltre questa età un candidato non è una novità e non arriva nemmeno a Gemini.
+// Un valore non valido nell'env non deve svuotare il run in silenzio: si
+// torna al default invece di scartare tutto ciò che ha una data.
+const maxAgeFromEnv = Number(process.env.RADAR_MAX_AGE_DAYS);
+const MAX_AGE_DAYS = Number.isFinite(maxAgeFromEnv) && maxAgeFromEnv > 0 ? maxAgeFromEnv : 21;
 const CONTENT_DIR = path.join(process.cwd(), 'src', 'content', 'radar');
 const GEMINI_MODEL = process.env.GEMINI_MODEL ?? 'gemini-2.5-flash';
 const FETCH_TIMEOUT_MS = 20_000;
@@ -95,6 +104,13 @@ function truncate(text, max) {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text;
 }
 
+/** Data di pubblicazione di un item come `YYYY-MM-DD`, o null se illeggibile. */
+function parseDate(raw) {
+  if (!raw) return null;
+  const ms = Date.parse(String(raw).trim());
+  return Number.isNaN(ms) ? null : new Date(ms).toISOString().slice(0, 10);
+}
+
 /* ------------------------------------------------------------------ fonti */
 
 /** Parser minimale per feed RSS 2.0 (<item>): usato da AWS e TechCrunch. */
@@ -109,7 +125,13 @@ function parseRssItems(xml, source, max) {
     const title = field('title');
     const link = field('link');
     if (!title || !link) continue;
-    items.push({ source, title, url: link, context: truncate(field('description'), 400) });
+    items.push({
+      source,
+      title,
+      url: link,
+      context: truncate(field('description'), 400),
+      publishedAt: parseDate(field('pubDate')),
+    });
     if (items.length >= max) break;
   }
   return items;
@@ -148,7 +170,16 @@ async function fetchTheVerge() {
         entryXml.match(/<content[^>]*>([\s\S]*?)<\/content>/)?.[1],
     );
     if (!title || !link) continue;
-    items.push({ source: 'The Verge', title, url: link, context: truncate(summary, 400) });
+    const published =
+      entryXml.match(/<published[^>]*>([\s\S]*?)<\/published>/)?.[1] ??
+      entryXml.match(/<updated[^>]*>([\s\S]*?)<\/updated>/)?.[1];
+    items.push({
+      source: 'The Verge',
+      title,
+      url: link,
+      context: truncate(summary, 400),
+      publishedAt: parseDate(published),
+    });
     if (items.length >= 12) break;
   }
   return items;
@@ -167,6 +198,7 @@ async function fetchHackerNews() {
       title: hit.title,
       url: hit.url || `https://news.ycombinator.com/item?id=${hit.objectID}`,
       context: `In front page su Hacker News con ${hit.points ?? 0} punti e ${hit.num_comments ?? 0} commenti.`,
+      publishedAt: parseDate(hit.created_at),
     }));
 }
 
@@ -197,6 +229,7 @@ async function fetchGithubTrending() {
       }, creato da poco)`,
       400,
     ),
+    publishedAt: parseDate(repo.created_at),
   }));
 }
 
@@ -229,7 +262,11 @@ async function pickCardsWithGemini(candidates) {
   }
 
   const list = candidates
-    .map((c, i) => `${i}. [${c.source}] ${c.title}\n   URL: ${c.url}\n   Contesto: ${c.context}`)
+    .map(
+      (c, i) =>
+        `${i}. [${c.source}${c.publishedAt ? `, ${c.publishedAt}` : ''}] ${c.title}\n` +
+        `   URL: ${c.url}\n   Contesto: ${c.context}`,
+    )
     .join('\n');
 
   const prompt = [
@@ -256,6 +293,17 @@ async function pickCardsWithGemini(candidates) {
     '- "summary": una sintesi di 2 frasi basata SOLO sulle informazioni fornite',
     '  (titolo e contesto). Non inventare dettagli, numeri o funzionalità;',
     '- "tags": da 2 a 4 tag brevi (es. "AWS", "LLM", "Tendenze", "Open source").',
+    '  Usa SOLO nomi di tecnologie, prodotti o aziende che compaiono davvero nel',
+    '  titolo o nel contesto del candidato: niente tag "AWS" su una notizia',
+    '  Microsoft, né viceversa. Nel dubbio usa un tag tematico ("Cloud", "AI").',
+    '',
+    'REGOLA NON NEGOZIABILE — non rafforzare mai ciò che dice la fonte:',
+    '- se la fonte parla di trattative, indiscrezioni o rumor ("in talks",',
+    '  "reportedly", "secondo fonti", "sarebbe"), la card deve restare tale:',
+    "  una trattativa NON è un accordo e un accordo NON è un'operazione conclusa;",
+    '- se è una preview, una beta, un annuncio o un rilascio graduale, dillo',
+    '  esplicitamente invece di presentarlo come già disponibile per tutti;',
+    '- non aggiungere numeri, date, prezzi o nomi che non siano nel materiale.',
     '',
     'Rispondi con un array JSON di oggetti { "id", "title", "summary", "tags" },',
     'dove "id" è il numero del candidato scelto.',
@@ -317,6 +365,42 @@ async function pickCardsWithGemini(candidates) {
 
 /* ------------------------------------------------------------------ output */
 
+// Il prompt chiede di non inventare tag di vendor, ma non basta: nella PR #33 la
+// card sui ricavi Azure di Microsoft si è ritrovata il tag "AWS", che la faceva
+// comparire nel filtro AWS di /radar e le cambiava il colore del blip. Qui un tag
+// di vendor sopravvive solo se quel vendor compare davvero nel materiale.
+const VENDOR_TAGS = {
+  aws: ['aws', 'amazon'],
+  amazon: ['amazon', 'aws'],
+  azure: ['azure', 'microsoft'],
+  'microsoft azure': ['azure', 'microsoft'],
+  microsoft: ['microsoft', 'azure', 'windows', 'github'],
+  google: ['google', 'gemini', 'gcp', 'deepmind', 'android'],
+  gcp: ['gcp', 'google'],
+  openai: ['openai', 'chatgpt', 'gpt', 'sora'],
+  anthropic: ['anthropic', 'claude'],
+  meta: ['meta', 'llama', 'facebook', 'instagram'],
+  nvidia: ['nvidia', 'cuda'],
+  apple: ['apple', 'ios', 'macos', 'iphone'],
+};
+
+/** Toglie i tag di vendor che non compaiono nel materiale della card. */
+function cleanVendorTags(tags, pick, candidate) {
+  const haystack = [pick.title, pick.summary, candidate.title, candidate.context, candidate.source]
+    .join(' ')
+    .toLowerCase();
+  const kept = tags.filter((tag) => {
+    const needles = VENDOR_TAGS[String(tag).trim().toLowerCase()];
+    if (!needles) return true; // tag tematico: non c'è nessun vendor da verificare
+    if (needles.some((needle) => haystack.includes(needle))) return true;
+    log(`Tag "${tag}" rimosso da "${pick.title}": il vendor non compare nella notizia.`);
+    return false;
+  });
+  // Lo schema della collection pretende almeno un tag: se il filtro li azzera
+  // tutti meglio tenerli così com'erano e lasciare la scelta alla review.
+  return kept.length > 0 ? kept : tags;
+}
+
 function cardMarkdown(pick, candidate, isoDate) {
   const tags = pick.tags.slice(0, 4).map((tag) => JSON.stringify(String(tag).trim()));
   return [
@@ -349,7 +433,9 @@ function prBody(cards) {
       '',
       `> ${pick.summary.trim()}`,
       '',
-      `- Fonte: [${candidate.source}](${candidate.url})`,
+      `- Fonte: [${candidate.source}](${candidate.url})${
+        candidate.publishedAt ? ` — pubblicata il ${candidate.publishedAt}` : ''
+      }`,
       `- Tag: ${pick.tags.join(', ')}`,
       `- File: \`src/content/radar/${fileName}\``,
       '',
@@ -390,11 +476,23 @@ async function main() {
   }
 
   const published = await loadPublishedUrls();
-  const fresh = candidates.filter((c) => !published.has(normalizeUrl(c.url)));
-  log(`Candidati: ${candidates.length} totali, ${fresh.length} dopo la deduplica.`);
+  const deduped = candidates.filter((c) => !published.has(normalizeUrl(c.url)));
+
+  // Chi non espone una data resta in gioco: meglio farla valutare in review che
+  // perdere una fonte intera se cambia il formato del feed.
+  const cutoff = Date.now() - MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+  const fresh = deduped.filter((c) => !c.publishedAt || Date.parse(c.publishedAt) >= cutoff);
+  const stale = deduped.length - fresh.length;
+  log(
+    `Candidati: ${candidates.length} totali, ${deduped.length} dopo la deduplica, ` +
+      `${fresh.length} entro ${MAX_AGE_DAYS} giorni${stale ? ` (${stale} troppo vecchi)` : ''}.`,
+  );
 
   if (DRY_RUN) {
-    for (const c of fresh) console.log(`  - [${c.source}] ${c.title}\n    ${c.url}`);
+    for (const c of fresh) {
+      console.log(`  - [${c.source}${c.publishedAt ? `, ${c.publishedAt}` : ''}] ${c.title}`);
+      console.log(`    ${c.url}`);
+    }
     log('Dry-run: nessuna chiamata a Gemini, nessun file scritto.');
     return;
   }
@@ -418,8 +516,9 @@ async function main() {
     if (usedSlugs.has(slug)) slug = `${slug}-${pick.id}`;
     usedSlugs.add(slug);
     const fileName = `${isoDate}-${slug}.md`;
-    await writeFile(path.join(CONTENT_DIR, fileName), cardMarkdown(pick, candidate, isoDate));
-    written.push({ pick, candidate, fileName });
+    const card = { ...pick, tags: cleanVendorTags(pick.tags, pick, candidate) };
+    await writeFile(path.join(CONTENT_DIR, fileName), cardMarkdown(card, candidate, isoDate));
+    written.push({ pick: card, candidate, fileName });
     log(`Card scritta: ${fileName}`);
   }
 
