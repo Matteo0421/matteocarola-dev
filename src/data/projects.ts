@@ -13,7 +13,7 @@ import { profile } from './profile';
 export const projects: Record<Locale, Project[]> = {
   it: [
     {
-      title: 'DELFI — Piattaforma GenAI di analisi documentale giudiziaria',
+      title: 'Piattaforma GenAI di analisi documentale giudiziaria',
       client: 'Agenzia della Pubblica Amministrazione · settore giustizia',
       year: '2026',
       description:
@@ -22,15 +22,15 @@ export const projects: Record<Locale, Project[]> = {
     },
     {
       title: 'Lab AI & Digital Twin',
-      client: 'Ente di alta formazione tecnica (ITS) · fondi PNRR',
+      client: 'Ente di formazione tecnica post-diploma · finanziamento pubblico',
       year: '2026',
       description:
         'Laboratorio didattico di Intelligenza Artificiale e Digital Twin per la formazione degli studenti: prototipo su AWS, poi infrastruttura fisica dedicata con nodi GPU. Referente operativo della delivery, condotta in ampia autonomia: messa in opera dei sistemi, esercizio del cluster Kubernetes con stack MLOps (JupyterHub, MLflow), demo AI di ottimizzazione supply chain e anomaly detection, backup automatico con prova di ripristino reale, documentazione di conformità DNSH e collaudo.',
-      tags: ['Kubernetes', 'MLOps', 'Digital Twin', 'PNRR'],
+      tags: ['Kubernetes', 'MLOps', 'Digital Twin', 'On-prem'],
     },
     {
       title: 'Piattaforma di cyber security & risk management',
-      client: 'Azienda del settore difesa',
+      client: 'Grande gruppo industriale · settore ad alta criticità',
       year: '2025',
       description:
         'Front-end di una piattaforma enterprise per l’analisi e la gestione del rischio di cyber security. Ho sviluppato interfacce a procedura guidata (wizard multi-step) con logica condizionale tra i passaggi, tabelle dati complesse e autenticazione con controllo degli accessi basato su ruoli, in team e su uno stack React strutturato secondo il pattern Atomic Design. Ho inoltre contribuito a una base di codice front-end standardizzata e riutilizzabile per i progetti successivi.',
@@ -48,7 +48,7 @@ export const projects: Record<Locale, Project[]> = {
   ],
   en: [
     {
-      title: 'DELFI — GenAI platform for judicial document analysis',
+      title: 'GenAI platform for judicial document analysis',
       client: 'Public administration agency · justice sector',
       year: '2026',
       description:
@@ -57,15 +57,15 @@ export const projects: Record<Locale, Project[]> = {
     },
     {
       title: 'AI & Digital Twin Lab',
-      client: 'Higher technical education institute (ITS) · PNRR funds',
+      client: 'Post-secondary technical education institution · publicly funded',
       year: '2026',
       description:
         'A teaching lab for Artificial Intelligence and Digital Twin to train students: a prototype on AWS, then dedicated physical infrastructure with GPU nodes. I was the delivery’s operational lead, working largely on my own: systems setup, running the Kubernetes cluster with an MLOps stack (JupyterHub, MLflow), AI demos for supply-chain optimization and anomaly detection, automated backups with a real restore test, and DNSH compliance documentation and acceptance testing.',
-      tags: ['Kubernetes', 'MLOps', 'Digital Twin', 'PNRR'],
+      tags: ['Kubernetes', 'MLOps', 'Digital Twin', 'On-prem'],
     },
     {
       title: 'Cyber security & risk management platform',
-      client: 'Company in the defense sector',
+      client: 'Large industrial group · security-critical sector',
       year: '2025',
       description:
         'Front-end of an enterprise platform for cyber-security risk analysis and management. I built multi-step wizard interfaces with conditional logic between steps, complex data tables and role-based access control authentication, working in a team on a React stack structured with the Atomic Design pattern. I also contributed to a standardized, reusable front-end codebase for later projects.',

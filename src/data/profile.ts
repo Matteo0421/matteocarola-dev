@@ -15,7 +15,7 @@ export const profile: Record<Locale, Profile> = {
     photoAlt: 'Ritratto di Matteo Carola, Software Engineer',
     about: [
       'Sono un Software Engineer con due anni di esperienza su progetti enterprise e per la Pubblica Amministrazione, cresciuto dallo sviluppo di applicazioni web alla realizzazione di soluzioni cloud e di Intelligenza Artificiale su AWS.',
-      'Ho implementato in prima persona l’infrastruttura AWS di DELFI, una piattaforma di Generative AI per l’analisi di documenti giudiziari, lavorando a stretto contatto con il Cloud Lead; e ho realizzato in ampia autonomia il laboratorio AI & Digital Twin di una fondazione ITS finanziato dal PNRR, dalla messa in opera dei sistemi fino al collaudo.',
+      'Ho implementato in prima persona l’infrastruttura AWS di una piattaforma di Generative AI per l’analisi di documenti giudiziari, lavorando a stretto contatto con il Cloud Lead; e ho realizzato in ampia autonomia il laboratorio AI & Digital Twin di un ente di formazione tecnica post-diploma, finanziato con fondi pubblici, dalla messa in opera dei sistemi fino al collaudo.',
       'Integro quotidianamente strumenti di AI-assisted development nel mio ciclo di lavoro. In parallelo proseguo la laurea triennale in Ingegneria Informatica e preparo la certificazione AWS Certified AI Practitioner (AIF-C01).',
     ],
     facts: [
@@ -38,7 +38,7 @@ export const profile: Record<Locale, Profile> = {
     photoAlt: 'Portrait of Matteo Carola, Software Engineer',
     about: [
       'I’m a Software Engineer with two years of experience on enterprise and public-sector projects, having grown from web application development to building cloud and Artificial Intelligence solutions on AWS.',
-      'I personally implemented the AWS infrastructure of DELFI, a Generative AI platform for the analysis of judicial documents, working closely with the Cloud Lead; and I delivered, largely on my own, the AI & Digital Twin lab of an ITS foundation funded by the PNRR programme, from systems setup all the way to acceptance testing.',
+      'I personally implemented the AWS infrastructure of a Generative AI platform for the analysis of judicial documents, working closely with the Cloud Lead; and I delivered, largely on my own, the AI & Digital Twin lab of a post-secondary technical education institution, funded through a public programme, from systems setup all the way to acceptance testing.',
       'I use AI-assisted development tools in my daily workflow. In parallel I’m completing my bachelor’s degree in Computer Engineering and preparing for the AWS Certified AI Practitioner (AIF-C01) certification.',
     ],
     facts: [
