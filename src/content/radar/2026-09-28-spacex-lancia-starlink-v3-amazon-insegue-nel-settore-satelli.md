@@ -1,5 +1,5 @@
 ---
-title: "SpaceX lancia Starlink V3, Amazon insegue nel settore satellitare"
+title: "SpaceX prepara il lancio di Starlink V3, Amazon insegue nel settore satellitare"
 summary: "SpaceX si prepara a lanciare i suoi primi satelliti Starlink V3, che promettono significativi miglioramenti alla costellazione esistente. Questo lancio è attentamente osservato da Amazon, che sta sviluppando la sua rete satellitare concorrente."
 tags: ["SpaceX", "Starlink", "Amazon", "Satelliti"]
 sourceName: "The Verge"
